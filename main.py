@@ -86,7 +86,13 @@ class Ghost(Scatter):
 		self.parent.place_block(*touch.pos)
 		self.parent.remove_widget(self)
 	def on_touch_move(self, touch):
-		self.center = touch.pos
+		# Snap when inside grid
+		g_x, g_y = self.parent.ggview.to_local(*touch.pos)
+		if g_x>35 and g_x<675 and g_y>35 and g_y<675:
+			self.x = int((g_x-35)/32)*32 + self.parent.ggview.x
+			self.y = int((g_y-35)/32)*32 + self.parent.ggview.y
+		else:
+			self.center = touch.pos 
 
 class PlayerWidget(Widget):
 	new_piece_box = ObjectProperty(None)
