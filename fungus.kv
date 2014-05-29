@@ -5,7 +5,7 @@
 	Image:
 		id: grid_background
 		pos: self.parent.pos
-		source: 'grid/block.png'
+		source: 'Grid/block.png'
 	Image:
 		id: sprite
 		pos: self.parent.pos
@@ -14,15 +14,13 @@
 <GameGridView>:
 	do_rotation: False
 	size_hint: None, None
-	#size: layout.size
 	center: self.parent.center
-	#GridLayout:
-	#	id: game_layout
-	#	cols: 21
-	#	rows: 21
-	#	col_default_width: 32
-	#	row_default_height: 32
-	#	size: 32*21, 32*21
+	#canvas.after:
+	#	Color:
+	#		rgba: 1, 0, 0, 0.5
+	#	Rectangle:
+	#		size: self.size
+	#		pos: self.pos
 
 <VertLine>:
 	size_hint_x: None
@@ -42,11 +40,12 @@
 
 <Ghost>:
 	do_rotation: False
+	auto_bring_to_front: True
 	size_hint: None, None
 	size: new_piece_image.size
 	Image:
 		id: new_piece_image
-		source: 'green/ghost.png'
+		source: 'Green/ghost.png'
 
 <PlayerWidget>:
 	new_piece_box: new_piece_box
@@ -68,7 +67,7 @@
 				points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
 	Image:
 		id: new_piece_image
-		source: 'green/home.png'
+		source: 'Green/home.png'
 		center: new_piece_box.center
 	Label:
 		center_x: self.parent.center_x
