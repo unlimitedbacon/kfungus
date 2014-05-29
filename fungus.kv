@@ -1,0 +1,103 @@
+#:kivy 1.8.0
+
+<GridBlock>:
+	sprite: sprite
+	Image:
+		id: grid_background
+		pos: self.parent.pos
+		source: 'grid/block.png'
+	Image:
+		id: sprite
+		pos: self.parent.pos
+		source: 'blank.png'
+
+<GameGridView>:
+	do_rotation: False
+	size_hint: None, None
+	#size: layout.size
+	center: self.parent.center
+	#GridLayout:
+	#	id: game_layout
+	#	cols: 21
+	#	rows: 21
+	#	col_default_width: 32
+	#	row_default_height: 32
+	#	size: 32*21, 32*21
+
+<VertLine>:
+	size_hint_x: None
+	width: 4
+	canvas:
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+<HorizLine>:
+	size_hint_y: None
+	height: 4
+	canvas:
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+<NewPiece>:
+	do_rotation: False
+	size_hint: None, None
+	size: new_piece_image.size
+	Image:
+		id: new_piece_image
+		source: 'green/home.png'
+
+<PlayerWidget>:
+	orientation: 'vertical'
+	size_hint_y: None
+	height: 320
+	Label:
+		center_x: self.parent.center_x
+		y: self.parent.top - self.height
+		text: 'Algae'
+	Widget:
+		id: new_piece_square
+		size_hint_x: None
+		width: 100
+		center: self.parent.center
+		canvas:
+			Line:
+				points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
+	Label:
+		center_x: self.parent.center_x
+		y: self.parent.y
+		text: 'Bites: 0'
+
+<FungusGame>:
+	player1_panel: player1_panel
+	ggview: ggview
+	BoxLayout:
+		orientation: 'horizontal'
+		BoxLayout:
+			id: PlayerPanel
+			orientation: 'vertical'
+			size_hint_x: None
+			width: 320
+			PlayerWidget:
+				id: player1_panel
+			HorizLine:
+			Label:
+				text: 'E Coli'
+				height: 160
+			HorizLine:
+			Label:
+				text: 'Penicillium'
+				height: 160
+			HorizLine:
+			Label:
+				text: 'Nanites'
+				height: 160
+			HorizLine:
+			Button:
+				text: 'GO'
+				on_press: root.add_new_piece()
+		VertLine:
+		StencilView:
+			GameGridView:
+				id: ggview
