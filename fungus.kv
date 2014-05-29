@@ -40,15 +40,17 @@
 			pos: self.pos
 			size: self.size
 
-<NewPiece>:
+<Ghost>:
 	do_rotation: False
 	size_hint: None, None
 	size: new_piece_image.size
 	Image:
 		id: new_piece_image
-		source: 'green/home.png'
+		source: 'green/ghost.png'
 
 <PlayerWidget>:
+	new_piece_box: new_piece_box
+	new_piece_image: new_piece_image
 	orientation: 'vertical'
 	size_hint_y: None
 	height: 320
@@ -57,13 +59,17 @@
 		y: self.parent.top - self.height
 		text: 'Algae'
 	Widget:
-		id: new_piece_square
+		id: new_piece_box
 		size_hint_x: None
 		width: 100
 		center: self.parent.center
 		canvas:
 			Line:
 				points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
+	Image:
+		id: new_piece_image
+		source: 'green/home.png'
+		center: new_piece_box.center
 	Label:
 		center_x: self.parent.center_x
 		y: self.parent.y
@@ -93,10 +99,6 @@
 			Label:
 				text: 'Nanites'
 				height: 160
-			HorizLine:
-			Button:
-				text: 'GO'
-				on_press: root.add_new_piece()
 		VertLine:
 		StencilView:
 			GameGridView:

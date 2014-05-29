@@ -57,20 +57,25 @@ class VertLine(Widget):
 class HorizLine(Widget):
 	pass
 
-class NewPiece(Scatter):
+class Ghost(Scatter):
 	def on_touch_up(self, touch):
-		super(NewPiece, self).on_touch_up(touch)
-		origin = self.parent.player1_panel.center
-		anim = Animation(center=origin)
-		anim.start(self)
+		super(Ghost, self).on_touch_up(touch)
+		#origin = self.parent.player1_panel.center
+		#anim = Animation(center=origin)
+		#anim.start(self)
+		self.parent.remove_widget(self)
+	def on_touch_move(self, touch):
+		self.center = touch.pos
 
 class PlayerWidget(Widget):
+	new_piece_box = ObjectProperty(None)
 	pass
 
 class FungusGame(FloatLayout):
 	grid = []
 	player1_panel = ObjectProperty(None)
 	ggview = ObjectProperty(None)
+	ghost = None
 
 	def new_game(self):
 		self.grid = []
@@ -80,11 +85,15 @@ class FungusGame(FloatLayout):
 				self.grid[x].append(GridBlock())
 		self.grid[5][5].fungus = 'Green'
 		self.ggview.setup(self.grid)
-
-	def add_new_piece(self):
-		new_piece = NewPiece()
-		new_piece.center = self.player1_panel.center
-		self.add_widget(new_piece)
+	
+	def on_touch_down(self, touch):
+		super(FungusGame, self).on_touch_down(touch)
+		# If player is trying to drag the new piece, generate ghost
+		new_piece_box = self.player1_panel.new_piece_box
+		if new_piece_box.collide_point(*touch.pos):
+			self.ghost = Ghost()
+			self.ghost.center = new_piece_box.center
+			self.add_widget(self.ghost)
 
 class FungusApp(App):
 	def build(self):
