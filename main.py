@@ -60,7 +60,8 @@ class GameGridView(Scatter):
 				self.gglayout.add_widget(y)
 
 	def on_touch_down(self, touch):
-		super(GameGridView, self).on_touch_down(touch)
+		if self.parent.collide_point(*touch.pos):
+			super(GameGridView, self).on_touch_down(touch)
 		if touch.is_double_tap:
 			self.center = self.parent.center
 			self.scale = 1
@@ -69,6 +70,10 @@ class GameGridView(Scatter):
 				self.scale -= 0.1
 			else:
 				self.scale += 0.1
+	
+	def on_touch_move(self, touch):
+		if self.parent.collide_point(*touch.pos):
+			super(GameGridView, self).on_touch_move(touch)
 
 	def global_coords_to_block(self, x, y):
 		x, y = self.to_local(x, y)
