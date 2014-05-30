@@ -11,7 +11,9 @@ from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.scatter import Scatter
 from kivy.animation import Animation
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
+
+from tetrominoes import tetro
 
 Config.set('graphics','width','1280')
 Config.set('graphics','height','768')
@@ -20,6 +22,21 @@ grid_size_x = 20
 grid_size_y = 20
 
 sprite_size = 32
+
+class TetroGrid(GridLayout):
+	def setup(self, tetromino):
+		self.col_default_width = sprite_size
+		self.row_default_height = sprite_size
+		self.rows = len(tetromino)
+		self.cols = len(tetromino[0])
+		self.size = ( sprite_size*self.cols, sprite_size*self.rows )
+		for y in tetromino:
+			for x in y:
+				b = GridBlock()
+				if x:
+					b.fungus = 'Green'
+				self.add_widget(b)
+
 
 class GridBlock(Widget):
 	fungus = StringProperty('None')
@@ -55,9 +72,9 @@ class GameGridView(Scatter):
 
 	def setup(self, grid):
 		self.gglayout.clear_widgets()
-		for x in grid:
-			for y in x:
-				self.gglayout.add_widget(y)
+		for y in grid:
+			for x in y:
+				self.gglayout.add_widget(x)
 
 	def on_touch_down(self, touch):
 		if self.parent.collide_point(*touch.pos):
@@ -107,9 +124,11 @@ class Ghost(Scatter):
 		else:
 			self.center = touch.pos 
 
+class NewPieceBox(Widget):
+	pass
+
 class PlayerWidget(Widget):
 	new_piece_box = ObjectProperty(None)
-	pass
 
 class FungusGame(FloatLayout):
 	grid = []

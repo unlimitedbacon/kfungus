@@ -1,5 +1,9 @@
 #:kivy 1.8.0
 
+<TetroGrid>:
+	size_hint: None, None
+	center: self.parent.center
+
 <GridBlock>:
 	sprite: sprite
 	Image:
@@ -47,9 +51,16 @@
 		id: new_piece_image
 		source: 'atlas://Green/ghost/x'
 
+<NewPieceBox>:
+	size_hint_x: None
+	width: 100
+	center: self.parent.center
+	canvas:
+		Line:
+			points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
+
 <PlayerWidget>:
 	new_piece_box: new_piece_box
-	new_piece_image: new_piece_image
 	orientation: 'vertical'
 	size_hint_y: None
 	height: 320
@@ -57,18 +68,11 @@
 		center_x: self.parent.center_x
 		y: self.parent.top - self.height
 		text: 'Algae'
-	Widget:
+	NewPieceBox:
 		id: new_piece_box
-		size_hint_x: None
-		width: 100
-		center: self.parent.center
-		canvas:
-			Line:
-				points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
 	Image:
-		id: new_piece_image
 		source: 'atlas://Green/home/x'
-		center: new_piece_box.center
+		center: self.parent.center
 	Label:
 		center_x: self.parent.center_x
 		y: self.parent.y
