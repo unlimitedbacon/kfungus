@@ -28,15 +28,15 @@ class GridBlock(Widget):
 
 	def on_fungus(self, instance, value):
 		if value != 'None':
-			self.sprite.source = value+'/home.png'
+			self.sprite.source = 'atlas://'+value+'/home/x'
 		else:
 			self.sprite.source = 'blank.png'
 	def on_neighbors(self, instance, value):
 		if self.fungus != 'None':
 			if len(value) > 0:
-				self.sprite.source = self.fungus+'/home_'+value+'.png'
+				self.sprite.source = 'atlas://'+self.fungus+'/home/'+value
 			else:
-				self.sprite.source = self.fungus+'/home.png'
+				self.sprite.source = 'atlas://'+self.fungus+'/home/x'
 
 class GameGridView(Scatter):
 	gglayout = GridLayout(cols = grid_size_x,

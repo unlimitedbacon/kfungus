@@ -45,7 +45,7 @@
 	size: new_piece_image.size
 	Image:
 		id: new_piece_image
-		source: 'Green/ghost.png'
+		source: 'atlas://Green/ghost/x'
 
 <PlayerWidget>:
 	new_piece_box: new_piece_box
@@ -67,7 +67,7 @@
 				points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
 	Image:
 		id: new_piece_image
-		source: 'Green/home.png'
+		source: 'atlas://Green/home/x'
 		center: new_piece_box.center
 	Label:
 		center_x: self.parent.center_x
