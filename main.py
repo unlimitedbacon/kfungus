@@ -12,6 +12,7 @@ from kivy.uix.image import Image
 from kivy.uix.scatter import Scatter
 from kivy.animation import Animation
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
+from kivy.graphics import Color, Rectangle
 
 from tetrominoes import tetro
 
@@ -30,18 +31,41 @@ class TetroGrid(GridLayout):
 		self.rows = len(tetromino)
 		self.cols = len(tetromino[0])
 		self.size = ( sprite_size*self.cols, sprite_size*self.rows )
-		for y in tetromino:
-			for x in y:
+		for y in range(self.rows):
+			for x in range(self.cols):
 				b = GridBlock()
-				if x:
+				b.background = False
+				if tetromino[y][x]:
 					b.fungus = 'Green'
+
+					neighbors = ''
+					# Up
+					if y > 0:
+						if tetromino[y-1][x]:
+							neighbors = neighbors+'u'
+					# Left
+					if x > 0:
+						if tetromino[y][x-1]:
+							neighbors = neighbors+'l'
+					# Right
+					if x < self.cols-1:
+						if tetromino[y][x+1]:
+							neighbors = neighbors+'r'
+					# Down
+					if y < self.rows-1:
+						if tetromino[y+1][x]:
+							neighbors = neighbors+'d'
+					b.neighbors = neighbors
+
 				self.add_widget(b)
 
 
-class GridBlock(Widget):
+class GridBlock(FloatLayout):
 	fungus = StringProperty('None')
 	neighbors = StringProperty('')
+	background = BooleanProperty(True)
 	sprite = ObjectProperty(None)
+	grid_background = ObjectProperty(None)
 
 	def on_fungus(self, instance, value):
 		if value != 'None':
@@ -54,6 +78,11 @@ class GridBlock(Widget):
 				self.sprite.source = 'atlas://'+self.fungus+'/home/'+value
 			else:
 				self.sprite.source = 'atlas://'+self.fungus+'/home/x'
+	def on_background(self, instance, value):
+		if value:
+			self.grid_background.source = 'Grid/block.png'
+		else:
+			self.grid_background.source = 'blank.png'
 
 class GameGridView(Scatter):
 	gglayout = GridLayout(cols = grid_size_x,
@@ -95,8 +124,8 @@ class GameGridView(Scatter):
 	def global_coords_to_block(self, x, y):
 		x, y = self.to_local(x, y)
 		# 35 pixels to compensate for GridLayout offset bug
-		x = int( (x-35) / sprite_size )
-		y = int( (self.gglayout.height-(y-35)) / sprite_size )
+		x = int( x / sprite_size )
+		y = int( (self.gglayout.height-y) / sprite_size )
 		return x, y
 
 class VertLine(Widget):
@@ -118,9 +147,9 @@ class Ghost(Scatter):
 		g_x, g_y = self.parent.ggview.to_local(*touch.pos)
 		s_x, s_y = self.parent.ggview.gglayout.size
 		scale = self.parent.ggview.scale
-		if g_x>35 and g_x<(s_x+35) and g_y>35 and g_y<(s_y+35):
-			self.x = int((g_x-35)/sprite_size)*sprite_size*scale + self.parent.ggview.x
-			self.y = int((g_y-35)/sprite_size)*sprite_size*scale + self.parent.ggview.y
+		if g_x > 0 and g_x < s_x and g_y > 0 and g_y < s_y:
+			self.x = int(g_x/sprite_size)*sprite_size*scale + self.parent.ggview.x - 34
+			self.y = int(g_y/sprite_size)*sprite_size*scale + self.parent.ggview.y - 34
 		else:
 			self.center = touch.pos 
 
@@ -148,6 +177,8 @@ class FungusGame(FloatLayout):
 
 		self.grid[5][5].fungus = 'Green'
 		self.ggview.setup(self.grid)
+
+		self.player1_panel.new_piece_grid.setup(tetro[3])
 	
 	def on_touch_down(self, touch):
 		super(FungusGame, self).on_touch_down(touch)
@@ -162,31 +193,33 @@ class FungusGame(FloatLayout):
 	def place_block(self, x, y):
 		x, y = self.ggview.global_coords_to_block( x, y )
 		self.grid[y][x].fungus = 'Green'
-		self.update_neighbors()
+		self.update_neighbors(self.grid)
 	
-	def update_neighbors(self):
-		for y in range(len(self.grid)):
-			for x in range(len(self.grid[y])):
-				fungus = self.grid[y][x].fungus
+	def update_neighbors(self, grid):
+		y_len = len(grid)
+		x_len = len(grid[0])
+		for y in range(y_len):
+			for x in range(x_len):
+				fungus = grid[y][x].fungus
 				if fungus != 'None':
 					neighbors = ''
 					# Up
 					if y > 0:
-						if self.grid[y-1][x].fungus == fungus:
+						if grid[y-1][x].fungus == fungus:
 							neighbors = neighbors+'u'
 					# Left
 					if x > 0:
-						if self.grid[y][x-1].fungus == fungus:
+						if grid[y][x-1].fungus == fungus:
 							neighbors = neighbors+'l'
 					# Right
-					if x < grid_size_x-1:
-						if self.grid[y][x+1].fungus == fungus:
+					if x < x_len-1:
+						if grid[y][x+1].fungus == fungus:
 							neighbors = neighbors+'r'
 					# Down
-					if y < grid_size_y-1:
-						if self.grid[y+1][x].fungus == fungus:
+					if y < y_len-1:
+						if grid[y+1][x].fungus == fungus:
 							neighbors = neighbors+'d'
-					self.grid[y][x].neighbors = neighbors
+					grid[y][x].neighbors = neighbors
 
 class FungusApp(App):
 	def build(self):

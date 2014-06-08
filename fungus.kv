@@ -6,6 +6,7 @@
 
 <GridBlock>:
 	sprite: sprite
+	grid_background: grid_background
 	Image:
 		id: grid_background
 		pos: self.parent.pos
@@ -61,6 +62,7 @@
 
 <PlayerWidget>:
 	new_piece_box: new_piece_box
+	new_piece_grid: new_piece_grid
 	orientation: 'vertical'
 	size_hint_y: None
 	height: 320
@@ -70,9 +72,11 @@
 		text: 'Algae'
 	NewPieceBox:
 		id: new_piece_box
-	Image:
-		source: 'atlas://Green/home/x'
-		center: self.parent.center
+	#Image:
+	#	source: 'atlas://Green/home/x'
+	#	center: self.parent.center
+	TetroGrid:
+		id: new_piece_grid
 	Label:
 		center_x: self.parent.center_x
 		y: self.parent.y
