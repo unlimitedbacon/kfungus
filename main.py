@@ -123,7 +123,6 @@ class GameGridView(Scatter):
 
 	def global_coords_to_block(self, x, y):
 		x, y = self.to_local(x, y)
-		# 35 pixels to compensate for GridLayout offset bug
 		x = int( x / sprite_size )
 		y = int( (self.gglayout.height-y) / sprite_size )
 		return x, y
@@ -137,9 +136,6 @@ class HorizLine(Widget):
 class Ghost(Scatter):
 	def on_touch_up(self, touch):
 		super(Ghost, self).on_touch_up(touch)
-		#origin = self.parent.player1_panel.center
-		#anim = Animation(center=origin)
-		#anim.start(self)
 		self.parent.place_block(*touch.pos)
 		self.parent.remove_widget(self)
 	def on_touch_move(self, touch):
@@ -148,8 +144,9 @@ class Ghost(Scatter):
 		s_x, s_y = self.parent.ggview.gglayout.size
 		scale = self.parent.ggview.scale
 		if g_x > 0 and g_x < s_x and g_y > 0 and g_y < s_y:
-			self.x = int(g_x/sprite_size)*sprite_size*scale + self.parent.ggview.x - 34
-			self.y = int(g_y/sprite_size)*sprite_size*scale + self.parent.ggview.y - 34
+			# I have absolutely no idea what is up with the 34 pixel offset
+			self.x = int(g_x/sprite_size)*sprite_size*scale + self.parent.ggview.x - 34*scale
+			self.y = int(g_y/sprite_size)*sprite_size*scale + self.parent.ggview.y - 34*scale
 		else:
 			self.center = touch.pos 
 
