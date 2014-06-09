@@ -2,7 +2,6 @@
 
 <TetroGrid>:
 	size_hint: None, None
-	center: self.parent.center
 
 <GridBlock>:
 	sprite: sprite
@@ -44,13 +43,15 @@
 			size: self.size
 
 <Ghost>:
+	ghost_grid: ghost_grid
 	do_rotation: False
 	auto_bring_to_front: True
 	size_hint: None, None
-	size: new_piece_image.size
-	Image:
-		id: new_piece_image
-		source: 'atlas://Green/ghost/x'
+	size: ghost_grid.size
+	TetroGrid:
+		id: ghost_grid
+	#Image:
+	#	source: 'atlas://Green/ghost/x'
 
 <NewPieceBox>:
 	size_hint_x: None
@@ -77,6 +78,7 @@
 	#	center: self.parent.center
 	TetroGrid:
 		id: new_piece_grid
+		center: self.parent.center
 	Label:
 		center_x: self.parent.center_x
 		y: self.parent.y
