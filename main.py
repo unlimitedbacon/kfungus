@@ -160,11 +160,12 @@ class Ghost(Scatter):
 
 	def setup(self, np, color):
 		self.ghost_grid.setup( np, color, 'ghost' )
-		self.ghost_grid.pos = (0,0)
+		self.ghost_grid.y = sprite_size - self.ghost_grid.height
 			
 	def on_touch_up(self, touch):
 		super(Ghost, self).on_touch_up(touch)
-		self.parent.place_block(*touch.pos)
+		x, y = self.parent.ggview.global_coords_to_block( *touch.pos )
+		self.parent.place_block( x, y )
 		self.parent.remove_widget(self)
 
 	def on_touch_move(self, touch):
@@ -222,9 +223,20 @@ class FungusGame(FloatLayout):
 			self.add_widget(self.ghost)
 
 	def place_block(self, x, y):
-		x, y = self.ggview.global_coords_to_block( x, y )
-		self.grid[y][x].fungus = 'Green'
-		self.grid[y][x].ftype = 'home'
+		# Check for Collisions
+		for ty in range(len(self.new_piece)):
+			for tx in range(len(self.new_piece[ty])):
+				if self.new_piece[ty][tx]:
+					if self.grid[y+ty][x+tx].fungus != 'None':
+						# Stop here and do not place piece
+						# Might be better to raise an exception
+						return 1
+		# Copy new piece onto game grid
+		for ty in range(len(self.new_piece)):
+			for tx in range(len(self.new_piece[ty])):
+				if self.new_piece[ty][tx]:
+					self.grid[y+ty][x+tx].fungus = 'Green'
+					self.grid[y+ty][x+tx].ftype = 'home'
 		self.update_neighbors(self.grid)
 	
 	def update_neighbors(self, grid):
