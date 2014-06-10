@@ -16,7 +16,7 @@ from kivy.animation import Animation
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.graphics import Color, Rectangle
 
-from tetrominoes import tetro
+from tetrominoes import tetros
 from game import *
 
 # Set window to same resolution as Nexus 4
@@ -193,7 +193,7 @@ class FungusGame(FloatLayout):
 	ghost = None
 	grid = []
 	current_player = 'Green'
-	new_piece = tetro[0]
+	new_piece = tetros[0]
 
 	def new_game(self):
 		# Initialize matrix of block objects.
@@ -210,7 +210,7 @@ class FungusGame(FloatLayout):
 		self.ggview.setup(self.grid)
 
 		# Choose random starting piece
-		self.new_piece = tetro[ randint(0,9) ]
+		self.new_piece = tetros[ randint(0,9) ]
 		self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player )
 	
 	def on_touch_down(self, touch):
@@ -229,7 +229,8 @@ class FungusGame(FloatLayout):
 		# If player taps the box, rotate new piece
 		new_piece_box = self.player1_panel.new_piece_box
 		if new_piece_box.collide_point(*touch.pos):
-			self.new_piece = rotate(self.new_piece)
+			#self.new_piece = rotate(self.new_piece)
+			self.new_piece.rotate()
 			self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player )
 
 	def place_block(self, x, y):
