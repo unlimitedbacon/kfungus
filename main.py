@@ -17,6 +17,7 @@ from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.graphics import Color, Rectangle
 
 from tetrominoes import tetro
+from game import *
 
 # Set window to same resolution as Nexus 4
 Config.set('graphics','width','1280')
@@ -30,6 +31,7 @@ sprite_size = 32
 # Shows a single lonesome tetromino
 class TetroGrid(GridLayout):
 	def setup(self, tetromino, fungus, ftype='norm'):
+		self.clear_widgets()
 		self.col_default_width = sprite_size
 		self.row_default_height = sprite_size
 		self.rows = len(tetromino)
@@ -221,11 +223,26 @@ class FungusGame(FloatLayout):
 			self.ghost.scale = self.ggview.scale
 			self.ghost.setup( self.new_piece, self.current_player )
 			self.add_widget(self.ghost)
+	
+	def on_touch_up(self, touch):
+		super(FungusGame, self).on_touch_up(touch)
+		# If player taps the box, rotate new piece
+		new_piece_box = self.player1_panel.new_piece_box
+		if new_piece_box.collide_point(*touch.pos):
+			self.new_piece = rotate(self.new_piece)
+			self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player )
 
 	def place_block(self, x, y):
+		t_height = len(self.new_piece)
+		t_width = len(self.new_piece[0])
+		# Check boundries
+		if (y<0) or (x<0):
+			return 1
+		if ( y+t_height > grid_size_y ) or ( x+t_width > grid_size_x ):
+			return 1
 		# Check for Collisions
-		for ty in range(len(self.new_piece)):
-			for tx in range(len(self.new_piece[ty])):
+		for ty in range(t_height):
+			for tx in range(t_width):
 				if self.new_piece[ty][tx]:
 					if self.grid[y+ty][x+tx].fungus != 'None':
 						# Stop here and do not place piece
