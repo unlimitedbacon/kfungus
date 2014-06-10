@@ -209,7 +209,7 @@ class FungusGame(FloatLayout):
 
 		# Choose random starting piece
 		self.new_piece = tetro[ randint(0,9) ]
-		self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player, 'home' )
+		self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player )
 	
 	def on_touch_down(self, touch):
 		super(FungusGame, self).on_touch_down(touch)
@@ -236,7 +236,6 @@ class FungusGame(FloatLayout):
 			for tx in range(len(self.new_piece[ty])):
 				if self.new_piece[ty][tx]:
 					self.grid[y+ty][x+tx].fungus = 'Green'
-					self.grid[y+ty][x+tx].ftype = 'home'
 		self.update_neighbors(self.grid)
 	
 	def update_neighbors(self, grid):
