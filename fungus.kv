@@ -85,29 +85,30 @@
 		text: 'Bites: 0'
 
 <FungusGame>:
-	player1_panel: player1_panel
+	#player1_panel: player1_panel
+	side_panel: side_panel
 	ggview: ggview
 	BoxLayout:
 		orientation: 'horizontal'
 		BoxLayout:
-			id: PlayerPanel
+			id: side_panel
 			orientation: 'vertical'
 			size_hint_x: None
 			width: 320
-			PlayerWidget:
-				id: player1_panel
-			HorizLine:
-			Label:
-				text: 'E Coli'
-				height: 160
-			HorizLine:
-			Label:
-				text: 'Penicillium'
-				height: 160
-			HorizLine:
-			Label:
-				text: 'Nanites'
-				height: 160
+			#PlayerWidget:
+			#	id: player1_panel
+			#HorizLine:
+			#Label:
+			#	text: 'E Coli'
+			#	height: 160
+			#HorizLine:
+			#Label:
+			#	text: 'Penicillium'
+			#	height: 160
+			#HorizLine:
+			#Label:
+			#	text: 'Nanites'
+			#	height: 160
 		VertLine:
 		StencilView:
 			GameGridView:

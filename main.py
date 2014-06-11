@@ -98,6 +98,7 @@ class GridBlock(FloatLayout):
 			else:
 				self.sprite.source = 'atlas://'+self.fungus+'/'+self.ftype+'/'+self.neighbors
 
+# Drag and zoomable view of the entire game grid
 class GameGridView(Scatter):
 	gglayout = GridLayout(cols = grid_size_x,
 			      rows = grid_size_y,
@@ -141,12 +142,14 @@ class GameGridView(Scatter):
 		y = int( (self.gglayout.height-y) / sprite_size )
 		return x, y
 
+# Layout dividers
 class VertLine(Widget):
 	pass
 
 class HorizLine(Widget):
 	pass
 
+# Outline showing where new blocks will be placed
 class Ghost(Scatter):
 	ghost_grid = ObjectProperty(None)
 
@@ -178,14 +181,27 @@ class PlayerWidget(Widget):
 	new_piece_box = ObjectProperty(None)
 
 class FungusGame(FloatLayout):
-	player1_panel = ObjectProperty(None)
+	side_panel = ObjectProperty(None)
+	#player1_panel = ObjectProperty(None)
 	ggview = ObjectProperty(None)
 	ghost = None
 	grid = []
-	current_player = 'Green'
+	players = []
+	curr_player_num = 0
 	new_piece = tetros[0]
 
 	def new_game(self):
+		# Setup players
+		self.players = [ Player(  'Green', 'Algae' ),
+				 Player(    'Red', 'Penicillium' ),
+				 Player(   'Blue', 'Nanites'),
+				 Player( 'Yellow', 'E Coli') ]
+		# Initialize player widgets and add them to the side panel
+		for p in self.players:
+			p.panel = PlayerWidget()
+			self.side_panel.add_widget( p.panel )
+		self.curr_player_num = randint( 0, len(self.players)-1 )	# Choose random starting player
+		self.curr_player = self.players[ self.curr_player_num ]
 		# Initialize matrix of block objects.
 		# Because of the way GridLayout fills itself, coordinates are [Y][X]
 		# from top left corner.
@@ -201,27 +217,27 @@ class FungusGame(FloatLayout):
 
 		# Choose random starting piece
 		self.new_piece = tetros[ randint(0,9) ]
-		self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player )
+		self.curr_player.panel.new_piece_grid.setup( self.new_piece, self.players[0].color )
 	
 	def on_touch_down(self, touch):
 		super(FungusGame, self).on_touch_down(touch)
 		# If player is trying to drag the new piece, generate ghost
-		new_piece_box = self.player1_panel.new_piece_box
+		new_piece_box = self.curr_player.panel.new_piece_box
 		if new_piece_box.collide_point(*touch.pos):
 			self.ghost = Ghost()
 			self.ghost.center = new_piece_box.center
 			self.ghost.scale = self.ggview.scale
-			self.ghost.setup( self.new_piece, self.current_player )
+			self.ghost.setup( self.new_piece, self.curr_player.color )
 			self.add_widget(self.ghost)
 	
 	def on_touch_up(self, touch):
 		super(FungusGame, self).on_touch_up(touch)
 		# If player taps the box, rotate new piece
-		new_piece_box = self.player1_panel.new_piece_box
+		new_piece_box = self.curr_player.panel.new_piece_box
 		if new_piece_box.collide_point(*touch.pos):
 			self.new_piece.rotate()
-			self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player )
-			self.player1_panel.new_piece_grid.center = self.player1_panel.center
+			self.curr_player.panel.new_piece_grid.setup( self.new_piece, self.curr_player.color )
+			self.curr_player.panel.new_piece_grid.center = self.curr_player.panel.center
 
 	def place_block(self, x, y):
 		t_height = len(self.new_piece)
