@@ -145,7 +145,6 @@ class GameGridView(Scatter):
 # Layout dividers
 class VertLine(Widget):
 	pass
-
 class HorizLine(Widget):
 	pass
 
@@ -182,7 +181,6 @@ class PlayerWidget(Widget):
 
 class FungusGame(FloatLayout):
 	side_panel = ObjectProperty(None)
-	#player1_panel = ObjectProperty(None)
 	ggview = ObjectProperty(None)
 	ghost = None
 	grid = []
@@ -199,9 +197,12 @@ class FungusGame(FloatLayout):
 		# Initialize player widgets and add them to the side panel
 		for p in self.players:
 			p.panel = PlayerWidget()
+			p.panel.remove_widget( p.panel.new_piece_box )		# This is dumb, but otherwise it doesn't have the right position
 			self.side_panel.add_widget( p.panel )
-		self.curr_player_num = randint( 0, len(self.players)-1 )	# Choose random starting player
+		self.curr_player_num = randint( 0, len(self.players)-1 )
+		# Choose random starting player
 		self.curr_player = self.players[ self.curr_player_num ]
+		self.curr_player.panel.add_widget( self.curr_player.panel.new_piece_box )
 		# Initialize matrix of block objects.
 		# Because of the way GridLayout fills itself, coordinates are [Y][X]
 		# from top left corner.
@@ -211,8 +212,16 @@ class FungusGame(FloatLayout):
 			for x in range(grid_size_x):
 				self.grid[y].append(GridBlock())
 
+		# Add home blocks
 		self.grid[5][5].fungus = 'Green'
 		self.grid[5][5].ftype = 'home'
+		self.grid[5][grid_size_x-6].fungus = 'Red'
+		self.grid[5][grid_size_x-6].ftype = 'home'
+		self.grid[grid_size_y-6][grid_size_x-6].fungus = 'Blue'
+		self.grid[grid_size_y-6][grid_size_x-6].ftype = 'home'
+		self.grid[grid_size_y-6][5].fungus = 'Yellow'
+		self.grid[grid_size_y-6][5].ftype = 'home'
+
 		self.ggview.setup(self.grid)
 
 		# Choose random starting piece
@@ -259,7 +268,7 @@ class FungusGame(FloatLayout):
 		for ty in range(len(self.new_piece)):
 			for tx in range(len(self.new_piece[ty])):
 				if self.new_piece[ty][tx]:
-					self.grid[y+ty][x+tx].fungus = 'Green'
+					self.grid[y+ty][x+tx].fungus = self.curr_player.color
 		self.update_neighbors(self.grid)
 	
 	def update_neighbors(self, grid):
