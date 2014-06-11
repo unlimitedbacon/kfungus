@@ -178,6 +178,7 @@ class NewPieceBox(Widget):
 
 class PlayerWidget(Widget):
 	new_piece_box = ObjectProperty(None)
+	name_label = ObjectProperty(None)
 
 class FungusGame(FloatLayout):
 	side_panel = ObjectProperty(None)
@@ -195,10 +196,15 @@ class FungusGame(FloatLayout):
 				 Player(   'Blue', 'Nanites'),
 				 Player( 'Yellow', 'E Coli') ]
 		# Initialize player widgets and add them to the side panel
-		for p in self.players:
+		for n in range(len(self.players)):
+			p = self.players[n]
 			p.panel = PlayerWidget()
+			p.panel.name_label.text = p.name
 			p.panel.remove_widget( p.panel.new_piece_box )		# This is dumb, but otherwise it doesn't have the right position
 			self.side_panel.add_widget( p.panel )
+			# Add dividers
+			if n < len(self.players)-1:
+				self.side_panel.add_widget( HorizLine() )
 		self.curr_player_num = randint( 0, len(self.players)-1 )
 		# Choose random starting player
 		self.curr_player = self.players[ self.curr_player_num ]

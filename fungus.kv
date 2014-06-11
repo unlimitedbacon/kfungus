@@ -64,10 +64,12 @@
 <PlayerWidget>:
 	new_piece_box: new_piece_box
 	new_piece_grid: new_piece_grid
+	name_label: name_label
 	orientation: 'vertical'
 	#size_hint_y: None
 	#height: 320
 	Label:
+		id: name_label
 		center_x: self.parent.center_x
 		y: self.parent.top - self.height
 		text: 'Algae'

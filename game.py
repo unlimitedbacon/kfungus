@@ -1,4 +1,8 @@
+from kivy.properties import StringProperty
+
 class Player():
+	color = ''
+	name = ''
 	bites = 0
 	score = 0
 	active = False
