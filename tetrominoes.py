@@ -6,8 +6,7 @@ class Tetro(list):
 		for ty in range(y_len):						# Start with top row
 			for tx in range(x_len):					# Left column moving right
 				turned[tx][y_len-ty-1] = self[ty][tx]		# Insert into last column moving down
-		print(turned)
-		self.__init__(turned)
+		self.__init__(turned)						# Reinitialize object with new matrix
 
 # Dictionary of tetrominoes
 tetros = { 0: Tetro([[ True ]]),				# 0:	#

@@ -80,20 +80,10 @@ class GridBlock(FloatLayout):
 
 	def on_fungus(self, instance, value):
 		self.update_sprite()
-		#if value != 'None':
-		#	self.sprite.source = 'atlas://'+value+'/home/x'
-		#else:
-		#	self.sprite.source = 'blank.png'
 	def on_ftype(self, instance, value):
 		self.update_sprite()
-		#self.sprite.source = 'atlas://'+self.fungus+'/'+self.ftype+'/'+self.neighbors
 	def on_neighbors(self, instance, value):
 		self.update_sprite()
-		#if self.fungus != 'None':
-		#	if len(value) > 0:
-		#		self.sprite.source = 'atlas://'+self.fungus+'/home/'+value
-		#	else:
-		#		self.sprite.source = 'atlas://'+self.fungus+'/home/x'
 	def on_background(self, instance, value):
 		if value:
 			self.grid_background.source = 'Grid/block.png'
@@ -229,9 +219,9 @@ class FungusGame(FloatLayout):
 		# If player taps the box, rotate new piece
 		new_piece_box = self.player1_panel.new_piece_box
 		if new_piece_box.collide_point(*touch.pos):
-			#self.new_piece = rotate(self.new_piece)
 			self.new_piece.rotate()
 			self.player1_panel.new_piece_grid.setup( self.new_piece, self.current_player )
+			self.player1_panel.new_piece_grid.center = self.player1_panel.center
 
 	def place_block(self, x, y):
 		t_height = len(self.new_piece)
@@ -284,6 +274,7 @@ class FungusGame(FloatLayout):
 
 class FungusApp(App):
 	def build(self):
+		self.icon = 'icon.png'
 		game = FungusGame()
 		game.new_game()
 		return game
