@@ -20,9 +20,9 @@ class Grid(list):
 		t_width = len(new_piece[0])
 		# Check boundries
 		if (y<0) or (x<0):
-			return 1
+			return False
 		if ( y+t_height > grid_size_y ) or ( x+t_width > grid_size_x ):
-			return 1
+			return False
 		# Check for Collisions
 		for ty in range(t_height):
 			for tx in range(t_width):
@@ -37,6 +37,7 @@ class Grid(list):
 				if new_piece[ty][tx]:
 					self[y+ty][x+tx].fungus = color
 		self.update_neighbors()
+		return True
 
 	def update_neighbors(self):
 		y_len = len(self)

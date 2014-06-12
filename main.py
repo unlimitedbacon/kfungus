@@ -174,12 +174,12 @@ class NewPieceBox(Widget):
 	pass
 
 class PlayerWidget(Widget):
-	new_piece_box = ObjectProperty(None)
 	name_label = ObjectProperty(None)
 
 class FungusGame(FloatLayout):
 	side_panel = ObjectProperty(None)
 	ggview = ObjectProperty(None)
+	new_piece_box = ObjectProperty(None)
 	ghost = None
 	grid = Grid()
 	players = []
@@ -194,22 +194,16 @@ class FungusGame(FloatLayout):
 				 Player( 'Yellow', 'E Coli') ]
 		# Initialize player widgets and add them to the side panel
 		for n in range(len(self.players)):
-			print(n)
 			p = self.players[n]
 			p.panel = PlayerWidget()
 			p.panel.name_label.text = p.name
-			p.panel.remove_widget( p.panel.new_piece_box )		# This is dumb, but otherwise it doesn't have the right position
 			self.side_panel.add_widget( p.panel )
 			# Add dividers
-			# For some stupid and inconceivable reason, the new_piece_box for player #3 (index 2)
-			# is being deleted in this block
-			#if n < len(self.players)-1:
-			#	self.side_panel.add_widget( HorizLine() )
-			print(p.panel.new_piece_box)
+			if n < len(self.players)-1:
+				self.side_panel.add_widget( HorizLine() )
 		# Choose random starting player
 		self.curr_player_num = randint( 0, len(self.players)-1 )
 		self.curr_player = self.players[ self.curr_player_num ]
-		self.curr_player.panel.add_widget( self.curr_player.panel.new_piece_box )
 		# Initialize matrix of block objects.
 		# Because of the way GridLayout fills itself, coordinates are [Y][X]
 		# from top left corner.
@@ -237,10 +231,9 @@ class FungusGame(FloatLayout):
 	def on_touch_down(self, touch):
 		super(FungusGame, self).on_touch_down(touch)
 		# If player is trying to drag the new piece, generate ghost
-		new_piece_box = self.curr_player.panel.new_piece_box
-		if new_piece_box.collide_point(*touch.pos):
+		if self.new_piece_box.collide_point(*touch.pos):
 			self.ghost = Ghost()
-			self.ghost.center = new_piece_box.center
+			self.ghost.center = self.new_piece_box.center
 			self.ghost.scale = self.ggview.scale
 			self.ghost.setup( self.new_piece, self.curr_player.color )
 			self.add_widget(self.ghost)
@@ -248,14 +241,21 @@ class FungusGame(FloatLayout):
 	def on_touch_up(self, touch):
 		super(FungusGame, self).on_touch_up(touch)
 		# If player taps the box, rotate new piece
-		new_piece_box = self.curr_player.panel.new_piece_box
-		if new_piece_box.collide_point(*touch.pos):
+		if self.new_piece_box.collide_point(*touch.pos):
 			self.new_piece.rotate()
 			self.curr_player.panel.new_piece_grid.setup( self.new_piece, self.curr_player.color )
 			self.curr_player.panel.new_piece_grid.center = self.curr_player.panel.center
 
 	def place_block(self, x, y):
-		self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
+		r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
+		if r:
+			self.next_turn()
+	
+	def next_turn(self):
+		self.curr_player_num += 1
+		if self.curr_player_num >= len(self.players):
+			self.curr_player_num = 0
+		self.curr_player = self.players[ self.curr_player_num ]
 	
 class FungusApp(App):
 	def build(self):

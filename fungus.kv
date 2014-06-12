@@ -56,13 +56,13 @@
 	size_hint_y: None
 	width: 100
 	height: 100
-	center: self.parent.center
+	#center: self.parent.center
 	canvas:
 		Line:
 			points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
 
 <PlayerWidget>:
-	new_piece_box: new_piece_box
+	#new_piece_box: new_piece_box
 	new_piece_grid: new_piece_grid
 	name_label: name_label
 	orientation: 'vertical'
@@ -73,8 +73,8 @@
 		center_x: self.parent.center_x
 		y: self.parent.top - self.height
 		text: 'Algae'
-	NewPieceBox:
-		id: new_piece_box
+	#NewPieceBox:
+	#	id: new_piece_box
 	TetroGrid:
 		id: new_piece_grid
 		center: self.parent.center
@@ -86,6 +86,7 @@
 <FungusGame>:
 	side_panel: side_panel
 	ggview: ggview
+	new_piece_box: new_piece_box
 	BoxLayout:
 		orientation: 'horizontal'
 		BoxLayout:
@@ -97,3 +98,5 @@
 		StencilView:
 			GameGridView:
 				id: ggview
+	NewPieceBox:
+		id: new_piece_box
