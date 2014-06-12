@@ -66,22 +66,20 @@
 		center: self.parent.center
 
 <PlayerWidget>:
-	#new_piece_box: new_piece_box
-	new_piece_grid: new_piece_grid
 	name_label: name_label
+	icon: icon
 	orientation: 'vertical'
 	#size_hint_y: None
 	#height: 320
+	Image:
+		id: icon
+		top: self.parent.top
+		x: self.parent.x
 	Label:
 		id: name_label
 		center_x: self.parent.center_x
 		y: self.parent.top - self.height
 		text: 'Algae'
-	#NewPieceBox:
-	#	id: new_piece_box
-	TetroGrid:
-		id: new_piece_grid
-		center: self.parent.center
 	Label:
 		center_x: self.parent.center_x
 		y: self.parent.y

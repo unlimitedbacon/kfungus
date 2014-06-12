@@ -41,7 +41,7 @@ class TetroGrid(GridLayout):
 				b.background = False
 				b.ftype = ftype
 				if tetromino[y][x]:
-					b.fungus = 'Green'
+					b.fungus = fungus
 
 					# Join neighboring blocks
 					neighbors = ''
@@ -174,6 +174,7 @@ class NewPieceBox(Widget):
 	grid = ObjectProperty(None)
 
 class PlayerWidget(Widget):
+	icon = ObjectProperty(None)
 	name_label = ObjectProperty(None)
 
 class FungusGame(FloatLayout):
@@ -197,6 +198,7 @@ class FungusGame(FloatLayout):
 			p = self.players[n]
 			p.panel = PlayerWidget()
 			p.panel.name_label.text = p.name
+			p.panel.icon.source = 'atlas://'+p.color+'/home/x'
 			self.side_panel.add_widget( p.panel )
 			# Add dividers
 			if n < len(self.players)-1:
