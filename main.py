@@ -23,9 +23,6 @@ from game import *
 Config.set('graphics','width','1280')
 Config.set('graphics','height','768')
 
-grid_size_x = 20
-grid_size_y = 20
-
 sprite_size = 32
 
 # Shows a single lonesome tetromino
@@ -184,7 +181,7 @@ class FungusGame(FloatLayout):
 	side_panel = ObjectProperty(None)
 	ggview = ObjectProperty(None)
 	ghost = None
-	grid = []
+	grid = Grid()
 	players = []
 	curr_player_num = 0
 	new_piece = tetros[0]
@@ -197,22 +194,25 @@ class FungusGame(FloatLayout):
 				 Player( 'Yellow', 'E Coli') ]
 		# Initialize player widgets and add them to the side panel
 		for n in range(len(self.players)):
+			print(n)
 			p = self.players[n]
 			p.panel = PlayerWidget()
 			p.panel.name_label.text = p.name
 			p.panel.remove_widget( p.panel.new_piece_box )		# This is dumb, but otherwise it doesn't have the right position
 			self.side_panel.add_widget( p.panel )
 			# Add dividers
-			if n < len(self.players)-1:
-				self.side_panel.add_widget( HorizLine() )
-		self.curr_player_num = randint( 0, len(self.players)-1 )
+			# For some stupid and inconceivable reason, the new_piece_box for player #3 (index 2)
+			# is being deleted in this block
+			#if n < len(self.players)-1:
+			#	self.side_panel.add_widget( HorizLine() )
+			print(p.panel.new_piece_box)
 		# Choose random starting player
+		self.curr_player_num = randint( 0, len(self.players)-1 )
 		self.curr_player = self.players[ self.curr_player_num ]
 		self.curr_player.panel.add_widget( self.curr_player.panel.new_piece_box )
 		# Initialize matrix of block objects.
 		# Because of the way GridLayout fills itself, coordinates are [Y][X]
 		# from top left corner.
-		self.grid = []
 		for y in range(grid_size_y):
 			self.grid.append([])
 			for x in range(grid_size_x):
@@ -255,54 +255,8 @@ class FungusGame(FloatLayout):
 			self.curr_player.panel.new_piece_grid.center = self.curr_player.panel.center
 
 	def place_block(self, x, y):
-		t_height = len(self.new_piece)
-		t_width = len(self.new_piece[0])
-		# Check boundries
-		if (y<0) or (x<0):
-			return 1
-		if ( y+t_height > grid_size_y ) or ( x+t_width > grid_size_x ):
-			return 1
-		# Check for Collisions
-		for ty in range(t_height):
-			for tx in range(t_width):
-				if self.new_piece[ty][tx]:
-					if self.grid[y+ty][x+tx].fungus != 'None':
-						# Stop here and do not place piece
-						# Might be better to raise an exception
-						return 1
-		# Copy new piece onto game grid
-		for ty in range(len(self.new_piece)):
-			for tx in range(len(self.new_piece[ty])):
-				if self.new_piece[ty][tx]:
-					self.grid[y+ty][x+tx].fungus = self.curr_player.color
-		self.update_neighbors(self.grid)
+		self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
 	
-	def update_neighbors(self, grid):
-		y_len = len(grid)
-		x_len = len(grid[0])
-		for y in range(y_len):
-			for x in range(x_len):
-				fungus = grid[y][x].fungus
-				if fungus != 'None':
-					neighbors = ''
-					# Up
-					if y > 0:
-						if grid[y-1][x].fungus == fungus:
-							neighbors = neighbors+'u'
-					# Left
-					if x > 0:
-						if grid[y][x-1].fungus == fungus:
-							neighbors = neighbors+'l'
-					# Right
-					if x < x_len-1:
-						if grid[y][x+1].fungus == fungus:
-							neighbors = neighbors+'r'
-					# Down
-					if y < y_len-1:
-						if grid[y+1][x].fungus == fungus:
-							neighbors = neighbors+'d'
-					grid[y][x].neighbors = neighbors
-
 class FungusApp(App):
 	def build(self):
 		self.icon = 'icon.png'
