@@ -171,7 +171,7 @@ class Ghost(Scatter):
 			self.center = touch.pos 
 
 class NewPieceBox(Widget):
-	pass
+	grid = ObjectProperty(None)
 
 class PlayerWidget(Widget):
 	name_label = ObjectProperty(None)
@@ -226,7 +226,8 @@ class FungusGame(FloatLayout):
 
 		# Choose random starting piece
 		self.new_piece = tetros[ randint(0,9) ]
-		self.curr_player.panel.new_piece_grid.setup( self.new_piece, self.players[0].color )
+
+		self.update_new_piece_box()
 	
 	def on_touch_down(self, touch):
 		super(FungusGame, self).on_touch_down(touch)
@@ -243,8 +244,7 @@ class FungusGame(FloatLayout):
 		# If player taps the box, rotate new piece
 		if self.new_piece_box.collide_point(*touch.pos):
 			self.new_piece.rotate()
-			self.curr_player.panel.new_piece_grid.setup( self.new_piece, self.curr_player.color )
-			self.curr_player.panel.new_piece_grid.center = self.curr_player.panel.center
+			self.new_piece_box.grid.setup( self.new_piece, self.curr_player.color )
 
 	def place_block(self, x, y):
 		r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
@@ -256,6 +256,14 @@ class FungusGame(FloatLayout):
 		if self.curr_player_num >= len(self.players):
 			self.curr_player_num = 0
 		self.curr_player = self.players[ self.curr_player_num ]
+		self.new_piece = tetros[ randint(0,9) ]
+		self.update_new_piece_box()
+	
+	def update_new_piece_box(self):
+		box = self.new_piece_box
+		box.y = 768 - 768/4*(self.curr_player_num+1) + (768/4-box.height)/2
+		box.grid.setup( self.new_piece, self.curr_player.color )
+
 	
 class FungusApp(App):
 	def build(self):
