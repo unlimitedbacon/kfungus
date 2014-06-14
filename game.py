@@ -31,6 +31,33 @@ class Grid(list):
 						# Stop here and do not place piece
 						# Might be better to raise an exception
 						return False
+		# Check for contact with team
+		contact = False
+		for ty in range(t_height):
+			for tx in range(t_width):
+				if new_piece[ty][tx]:
+					# Check above current space
+					if (y+ty-1) >= 0:		# Make sure your not checking a nonexistent space
+						cell_above = self[y+ty-1][x+tx]
+						if cell_above.fungus == color:
+							contact = True
+					# Below
+					if (y+ty+1) < 20:
+						cell_below = self[y+ty+1][x+tx]
+						if cell_below.fungus == color:
+							contact = True
+					# Left
+					if (x+tx-1) >=0:
+						cell_left = self[y+ty][x+tx-1]
+						if cell_left.fungus == color:
+							contact = True
+					# Right
+					if (x+tx+1) < 20:
+						cell_right = self[y+ty][x+tx+1]
+						if cell_right.fungus == color:
+							contact = True
+		if contact == False:
+			return False
 		# Copy new piece onto game grid
 		for ty in range(t_height):
 			for tx in range(t_width):
