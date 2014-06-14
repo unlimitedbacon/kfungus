@@ -190,9 +190,9 @@ class FungusGame(FloatLayout):
 	def new_game(self):
 		# Setup players
 		self.players = [ Player(  'Green', 'Algae' ),
-				 Player(    'Red', 'Penicillium' ),
+				 Player(    'Red', 'E Coli' ),
 				 Player(   'Blue', 'Nanites'),
-				 Player( 'Yellow', 'E Coli') ]
+				 Player( 'Yellow', 'Penicillium') ]
 		# Initialize player widgets and add them to the side panel
 		for n in range(len(self.players)):
 			p = self.players[n]
