@@ -6,15 +6,17 @@ anim_speed = 0.2
 class Player():
 	color = ''
 	name = ''
+	home = [0,0]
 	bites = 0
 	score = 0
 	active = False
 	alive = True
 	panel = None
 
-	def __init__(self, color, name):
+	def __init__(self, color, name, home):
 		self.color = color
 		self.name = name
+		self.home = home
 
 class Grid(list):
 	def place_block(self, new_piece, color, x, y):
@@ -112,6 +114,35 @@ class Grid(list):
 					victim_x = x + vector[1] * victim
 					self[victim_y][victim_x].fungus = color
 					self.eat(color,victim_x,victim_y)
+	
+	def phone_home(self, player, imperial_map, x, y):
+		imperial_map[y][x] = True
+		if y-1 >= 0:
+			if self[y-1][x].fungus == player.color and imperial_map[y-1][x] == False:
+				self.phone_home( player, imperial_map, x, y-1 )
+		if y+1 < 20:
+			if self[y+1][x].fungus == player.color and imperial_map[y+1][x] == False:
+				self.phone_home( player, imperial_map, x, y+1 )
+		if x-1 >= 0:
+			if self[y][x-1].fungus == player.color and imperial_map[y][x-1] == False:
+				self.phone_home( player, imperial_map, x-1, y )
+		if x+1 < 20:
+			if self[y][x+1].fungus == player.color and imperial_map[y][x+1] == False:
+				self.phone_home( player, imperial_map, x+1, y )
+	
+	def imperial_census(self, players):
+		# For all teams
+		# Check to make sure each thing is somehow
+		# connected to the home base
+		# If not, it dies.
+		for empire in players:
+			imperial_map = [[False for x in range(grid_size_x)] for y in range(grid_size_y)]
+			self.phone_home( empire, imperial_map, empire.home[1], empire.home[0] )
+			# Compare game grid against map to find independents
+			for y in range(0,grid_size_y):
+				for x in range(0,grid_size_x):
+					if self[y][x].fungus == empire.color and imperial_map[y][x] == False:
+						self[y][x].fungus = 'None'
 
 	def update_neighbors(self):
 		y_len = len(self)

@@ -189,10 +189,10 @@ class FungusGame(FloatLayout):
 
 	def new_game(self):
 		# Setup players
-		self.players = [ Player(  'Green', 'Algae' ),
-				 Player(    'Red', 'E Coli' ),
-				 Player(   'Blue', 'Nanites'),
-				 Player( 'Yellow', 'Penicillium') ]
+		self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
+				 Player(    'Red', 'E Coli',      [ 5, grid_size_x-6 ] ),
+				 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] ),
+				 Player( 'Yellow', 'Penicillium', [ grid_size_y-6, 5 ] )]
 		# Initialize player widgets and add them to the side panel
 		for n in range(len(self.players)):
 			p = self.players[n]
@@ -215,14 +215,9 @@ class FungusGame(FloatLayout):
 				self.grid[y].append(GridBlock())
 
 		# Add home blocks
-		self.grid[5][5].fungus = 'Green'
-		self.grid[5][5].ftype = 'home'
-		self.grid[5][grid_size_x-6].fungus = 'Red'
-		self.grid[5][grid_size_x-6].ftype = 'home'
-		self.grid[grid_size_y-6][grid_size_x-6].fungus = 'Blue'
-		self.grid[grid_size_y-6][grid_size_x-6].ftype = 'home'
-		self.grid[grid_size_y-6][5].fungus = 'Yellow'
-		self.grid[grid_size_y-6][5].ftype = 'home'
+		for player in self.players:
+			self.grid[ player.home[0] ][ player.home[1] ].fungus = player.color
+			self.grid[ player.home[0] ][ player.home[1] ].ftype = 'home'
 
 		self.ggview.setup(self.grid)
 
@@ -252,6 +247,7 @@ class FungusGame(FloatLayout):
 		r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
 		if r:
 			self.next_turn()
+			self.grid.imperial_census( self.players )
 	
 	def next_turn(self):
 		self.curr_player_num += 1
