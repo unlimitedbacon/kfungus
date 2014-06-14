@@ -30,7 +30,7 @@ class Grid(list):
 					if self[y+ty][x+tx].fungus != 'None':
 						# Stop here and do not place piece
 						# Might be better to raise an exception
-						return 1
+						return False
 		# Copy new piece onto game grid
 		for ty in range(t_height):
 			for tx in range(t_width):
