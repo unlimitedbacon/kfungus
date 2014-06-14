@@ -175,3 +175,10 @@ class Grid(list):
 			return True
 		else:
 			return False
+	
+	def kill(self, loser):
+		# Delete all of a players remaining blocks
+		for y in range(grid_size_y):
+			for x in range(grid_size_x):
+				if self[y][x].fungus == loser.color:
+					self[y][x].fungus = 'None'

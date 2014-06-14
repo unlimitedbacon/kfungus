@@ -246,8 +246,9 @@ class FungusGame(FloatLayout):
 	def place_block(self, x, y):
 		r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
 		if r:
-			self.next_turn()
+			self.check_pulse()
 			self.grid.imperial_census( self.players )
+			self.next_turn()
 	
 	def next_turn(self):
 		self.curr_player_num += 1
@@ -256,6 +257,19 @@ class FungusGame(FloatLayout):
 		self.curr_player = self.players[ self.curr_player_num ]
 		self.new_piece = tetros[ randint(0,9) ]
 		self.update_new_piece_box()
+	
+	def check_pulse(self):
+		# Check to make sure the head of each team is alive
+		# if not, remove them from the players list
+		# and delete the rest of their blocks
+		#for x in range(len(self.players)):
+		#	patient = self.players[x]
+		for patient in self.players:
+			home_fungus = self.grid[ patient.home[0] ][ patient.home[1] ].fungus
+			if home_fungus != patient.color:
+				self.grid.kill(patient)
+				self.side_panel.remove_widget( patient.panel )
+				self.players.remove(patient)
 	
 	def update_new_piece_box(self):
 		box = self.new_piece_box
