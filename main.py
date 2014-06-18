@@ -12,16 +12,18 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.scatter import Scatter
+from kivy.uix.settings import SettingsWithSidebar
 from kivy.animation import Animation
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.graphics import Color, Rectangle
 
 from tetrominoes import tetros
 from game import *
+from settings import settings_json
 
 # Set window to same resolution as Nexus 4
-Config.set('graphics','width','1280')
-Config.set('graphics','height','768')
+#Config.set('graphics','width','1280')
+#Config.set('graphics','height','768')
 
 sprite_size = 32
 
@@ -187,12 +189,23 @@ class FungusGame(FloatLayout):
 	curr_player_num = 0
 	new_piece = tetros[0]
 
-	def new_game(self):
+	def new_game(self, num_players):
+		# Clear everything
+		self.grid = Grid()
+		self.side_panel.clear_widgets()
 		# Setup players
-		self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
-				 Player(    'Red', 'E Coli',      [ 5, grid_size_x-6 ] ),
-				 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] ),
-				 Player( 'Yellow', 'Penicillium', [ grid_size_y-6, 5 ] )]
+		if num_players == '4':
+			self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
+					 Player(    'Red', 'E Coli',      [ 5, grid_size_x-6 ] ),
+					 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] ),
+					 Player( 'Yellow', 'Penicillium', [ grid_size_y-6, 5 ] )]
+		elif num_players == '3':
+			self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
+					 Player(    'Red', 'E Coli',      [ 5, grid_size_x-6 ] ),
+					 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] )]
+		else:
+			self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
+					 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] )]
 		# Initialize player widgets and add them to the side panel
 		for n in range(len(self.players)):
 			p = self.players[n]
@@ -273,16 +286,34 @@ class FungusGame(FloatLayout):
 	
 	def update_new_piece_box(self):
 		box = self.new_piece_box
-		box.y = 768 - 768/4*(self.curr_player_num+1) + (768/4-box.height)/2
+		height = int(app.config.get('graphics', 'height'))
+		n = len(self.players)
+		box.y = height - height/n*(self.curr_player_num+1) + (height/n-box.height)/2
 		box.grid.setup( self.new_piece, self.curr_player.color )
 
 	
 class FungusApp(App):
 	def build(self):
 		self.icon = 'icon.png'
-		game = FungusGame()
-		game.new_game()
-		return game
+		#self.use_kivy_settings = False
+		self.game = FungusGame()
+		self.game.new_game( self.config.get('game', 'num_players') )
+		return self.game
+	
+	def build_config(self, config):
+		config.setdefaults('game', {'num_players': '4' })
+		config.setdefaults('graphics', {'width': 1280,
+				   		'height': 768})
+	
+	def build_settings(self, settings):
+		settings.add_json_panel('Game Settings',
+					self.config,
+					data=settings_json)
+	
+	def on_config_change(self, config, section, key, value):
+		if key == 'num_players':
+			self.game.new_game(value)
 
 if __name__ == '__main__':
-	FungusApp().run()
+	app = FungusApp()
+	app.run()
