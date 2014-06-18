@@ -73,16 +73,20 @@
 	#height: 320
 	Image:
 		id: icon
-		top: self.parent.top
-		x: self.parent.x
+		allow_stretch: True
+		size: self.texture_size
+		top: self.parent.top-16
+		x: self.parent.x+16
 	Label:
 		id: name_label
-		center_x: self.parent.center_x
-		y: self.parent.top - self.height
+		size: self.texture_size
+		x: self.parent.x + 64
+		y: self.parent.top - self.height - 24
 		text: 'Algae'
 	Label:
-		center_x: self.parent.center_x
-		y: self.parent.y
+		size: self.texture_size
+		x: self.parent.x + 16
+		y: self.parent.top - self.height - 64
 		text: 'Bites: 0'
 
 <FungusGame>:

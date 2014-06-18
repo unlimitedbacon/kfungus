@@ -5,6 +5,7 @@ from random import randint
 
 from kivy.app import App
 from kivy.config import Config
+from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
@@ -216,6 +217,10 @@ class FungusGame(FloatLayout):
 			# Add dividers
 			if n < len(self.players)-1:
 				self.side_panel.add_widget( HorizLine() )
+		# Add settings button to side panel
+		sbutton = Button( text='Settings', size_hint_y=None, height=100 )
+		sbutton.bind( on_press=app.open_settings )
+		self.side_panel.add_widget( sbutton )
 		# Choose random starting player
 		self.curr_player_num = randint( 0, len(self.players)-1 )
 		self.curr_player = self.players[ self.curr_player_num ]
@@ -288,7 +293,7 @@ class FungusGame(FloatLayout):
 		box = self.new_piece_box
 		height = int(app.config.get('graphics', 'height'))
 		n = len(self.players)
-		box.y = height - height/n*(self.curr_player_num+1) + (height/n-box.height)/2
+		box.y = height - (height-100)/n*(self.curr_player_num+1) + ((height-100)/n-box.height)/2
 		box.grid.setup( self.new_piece, self.curr_player.color )
 
 	
