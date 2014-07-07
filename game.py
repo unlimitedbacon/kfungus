@@ -7,7 +7,7 @@ class Player():
 	color = ''
 	name = ''
 	home = [0,0]
-	bites = 5
+	bites = 3
 	score = 0
 	active = False
 	alive = True
@@ -46,7 +46,7 @@ class Grid(list):
 						if cell_above.fungus == color:
 							contact = True
 					# Below
-					if (y+ty+1) < 20:
+					if (y+ty+1) < grid_size_y:
 						cell_below = self[y+ty+1][x+tx]
 						if cell_below.fungus == color:
 							contact = True
@@ -56,7 +56,7 @@ class Grid(list):
 						if cell_left.fungus == color:
 							contact = True
 					# Right
-					if (x+tx+1) < 20:
+					if (x+tx+1) < grid_size_x:
 						cell_right = self[y+ty][x+tx+1]
 						if cell_right.fungus == color:
 							contact = True
@@ -198,28 +198,30 @@ class Grid(list):
 		# Check for contact with team
 		contact = False
 		# Check above current space
-		if (y+ty-1) >= 0:		# Make sure your not checking a nonexistent space
-			cell_above = self[y+ty-1][x+tx]
-			if cell_above.fungus == color:
+		if (y-1) >= 0:		# Make sure your not checking a nonexistent space
+			cell_above = self[y-1][x]
+			if cell_above.fungus == player.color:
 				contact = True
 		# Below
-		if (y+ty+1) < 20:
-			cell_below = self[y+ty+1][x+tx]
-			if cell_below.fungus == color:
+		if (y+1) < grid_size_y:
+			cell_below = self[y+1][x]
+			if cell_below.fungus == player.color:
 				contact = True
 		# Left
-		if (x+tx-1) >=0:
-			cell_left = self[y+ty][x+tx-1]
-			if cell_left.fungus == color:
+		if (x-1) >=0:
+			cell_left = self[y][x-1]
+			if cell_left.fungus == player.color:
 				contact = True
 		# Right
-		if (x+tx+1) < 20:
-			cell_right = self[y+ty][x+tx+1]
-			if cell_right.fungus == color:
+		if (x+1) < grid_size_x:
+			cell_right = self[y][x+1]
+			if cell_right.fungus == player.color:
 				contact = True
 		if contact == False:
 			return False
 		# Take a bite
 		self[y][x].fungus = 'None'
 		player.bites -= 1
+		self.update_neighbors()
+		return True
 

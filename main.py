@@ -196,6 +196,7 @@ class FungusGame(FloatLayout):
 	players = []
 	curr_player_num = 0
 	new_piece = tetros[0]
+	bite_mode = False
 
 	def new_game(self, num_players):
 		# Clear everything
@@ -258,7 +259,10 @@ class FungusGame(FloatLayout):
 			self.ghost = Ghost()
 			self.ghost.center = self.new_piece_box.center
 			self.ghost.scale = self.ggview.scale
-			self.ghost.setup( self.new_piece, self.curr_player.color )
+			if self.bite_mode:
+				self.ghost.setup( [[True]], 'Bite' )
+			else:
+				self.ghost.setup( self.new_piece, self.curr_player.color )
 			self.add_widget(self.ghost)
 	
 	def on_touch_up(self, touch):
@@ -272,11 +276,20 @@ class FungusGame(FloatLayout):
 		self.update_new_piece_box()
 
 	def place_block(self, x, y):
-		r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
+		if self.bite_mode:
+			r = self.grid.bite( self.curr_player, x, y )
+			if r:
+				self.toggle_bite_mode()
+		else:
+			r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
 		if r:
 			self.check_pulse()
 			self.grid.imperial_census( self.players )
 			self.next_turn()
+	
+	def toggle_bite_mode(self):
+		self.bite_mode = not self.bite_mode
+		self.update_new_piece_box()
 	
 	def next_turn(self):
 		self.curr_player_num += 1
@@ -301,7 +314,10 @@ class FungusGame(FloatLayout):
 	
 	def update_new_piece_box(self):
 		box = self.new_piece_box
-		box.grid.setup( self.new_piece, self.curr_player.color )
+		if self.bite_mode:
+			box.grid.setup( [[True]], 'Bite' )
+		else:
+			box.grid.setup( self.new_piece, self.curr_player.color )
 
 	
 class FungusApp(App):
