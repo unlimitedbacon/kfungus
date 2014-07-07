@@ -29,7 +29,7 @@ source.include_exts = py,png,jpg,kv,atlas
 #version.filename = %(source.dir)s/main.py
 
 # (str) Application versioning (method 2)
-version = 0.0.3
+version = 0.0.4
 
 # (list) Application requirements
 requirements = kivy
@@ -38,7 +38,7 @@ requirements = kivy
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/icon.png
+presplash.filename = %(source.dir)s/splash.png
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/icon.png
@@ -137,7 +137,7 @@ fullscreen = 1
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 1
+log_level = 2
 
 
 # -----------------------------------------------------------------------------

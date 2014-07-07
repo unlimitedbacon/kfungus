@@ -7,7 +7,7 @@ class Player():
 	color = ''
 	name = ''
 	home = [0,0]
-	bites = 0
+	bites = 5
 	score = 0
 	active = False
 	alive = True
@@ -182,3 +182,44 @@ class Grid(list):
 			for x in range(grid_size_x):
 				if self[y][x].fungus == loser.color:
 					self[y][x].fungus = 'None'
+	
+	def bite(self, player, x, y):
+		# Make sure player has enough bites
+		if player.bites <= 0:
+			return False
+		# Check boundries
+		if not self.in_bounds(x,y):
+			return False
+		# Check to make sure cell isn't empty or your own team
+		if self[y][x].fungus == 'None' or self[y][x].fungus == player.color:
+			return False
+		# This part is copied from place()
+		# it should probably be put in its own function
+		# Check for contact with team
+		contact = False
+		# Check above current space
+		if (y+ty-1) >= 0:		# Make sure your not checking a nonexistent space
+			cell_above = self[y+ty-1][x+tx]
+			if cell_above.fungus == color:
+				contact = True
+		# Below
+		if (y+ty+1) < 20:
+			cell_below = self[y+ty+1][x+tx]
+			if cell_below.fungus == color:
+				contact = True
+		# Left
+		if (x+tx-1) >=0:
+			cell_left = self[y+ty][x+tx-1]
+			if cell_left.fungus == color:
+				contact = True
+		# Right
+		if (x+tx+1) < 20:
+			cell_right = self[y+ty][x+tx+1]
+			if cell_right.fungus == color:
+				contact = True
+		if contact == False:
+			return False
+		# Take a bite
+		self[y][x].fungus = 'None'
+		player.bites -= 1
+

@@ -78,6 +78,7 @@
 
 <PlayerWidget>:
 	name_label: name_label
+	bites_label: bites_label
 	icon: icon
 	orientation: 'vertical'
 	Image:
@@ -93,6 +94,7 @@
 		y: self.parent.top - self.height - 24
 		text: 'Algae'
 	Label:
+		id: bites_label
 		size: self.texture_size
 		x: self.parent.x + 16
 		y: self.parent.top - self.height - 64
