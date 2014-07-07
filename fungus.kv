@@ -79,7 +79,7 @@
 
 <PlayerWidget>:
 	name_label: name_label
-	bites_label: bites_label
+	bites_grid: bites_grid
 	icon: icon
 	orientation: 'vertical'
 	Image:
@@ -94,12 +94,11 @@
 		x: self.parent.x + 64
 		y: self.parent.top - self.height - 24
 		text: 'Algae'
-	Label:
-		id: bites_label
-		size: self.texture_size
+	GridLayout:
+		id: bites_grid
+		cols: 5
 		x: self.parent.x + 16
-		y: self.parent.top - self.height - 64
-		text: 'Bites: 0'
+		y: self.parent.top - self.height - 32
 
 <FungusGame>:
 	side_panel: side_panel

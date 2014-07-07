@@ -183,6 +183,12 @@ class NewPieceBox(Widget):
 class PlayerWidget(Widget):
 	icon = ObjectProperty(None)
 	name_label = ObjectProperty(None)
+	bites_grid = ObjectProperty(None)
+
+	def update(self, player):
+		self.bites_grid.clear_widgets()
+		for x in range(player.bites):
+			self.bites_grid.add_widget( Image(source='atlas://Bite/norm/x') )
 
 class ButtonsGrid(BoxLayout):
 	pass
@@ -221,6 +227,7 @@ class FungusGame(FloatLayout):
 			p.panel = PlayerWidget()
 			p.panel.name_label.text = p.name
 			p.panel.icon.source = 'atlas://'+p.color+'/home/x'
+			p.panel.update( p )
 			self.side_panel.add_widget( p.panel )
 			# Add dividers
 			if n < len(self.players)-1:
@@ -285,6 +292,7 @@ class FungusGame(FloatLayout):
 		if r:
 			self.check_pulse()
 			self.grid.imperial_census( self.players )
+			self.curr_player.panel.update( self.curr_player )
 			self.next_turn()
 	
 	def toggle_bite_mode(self):
@@ -318,7 +326,7 @@ class FungusGame(FloatLayout):
 			box.grid.setup( [[True]], 'Bite' )
 		else:
 			box.grid.setup( self.new_piece, self.curr_player.color )
-
+	
 	
 class FungusApp(App):
 	def build(self):
