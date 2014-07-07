@@ -53,9 +53,7 @@
 
 <NewPieceBox>:
 	grid: grid
-	size_hint_x: None
 	size_hint_y: None
-	width: 136
 	height: 136
 	x: 304-self.width
 	canvas:
@@ -65,12 +63,23 @@
 		id: grid
 		center: self.parent.center
 
+<ButtonsGrid>:
+	orientation: 'horizontal'
+	size_hint_y: None
+	height: 100
+	Button:
+		text: "Settings"
+		on_press: app.open_settings()
+	Button:
+		text: "Bite"
+	Button:
+		text: "Rotate"
+		on_press: app.game.rotate_new_piece()
+
 <PlayerWidget>:
 	name_label: name_label
 	icon: icon
 	orientation: 'vertical'
-	#size_hint_y: None
-	#height: 320
 	Image:
 		id: icon
 		allow_stretch: True
@@ -92,17 +101,14 @@
 <FungusGame>:
 	side_panel: side_panel
 	ggview: ggview
-	new_piece_box: new_piece_box
 	BoxLayout:
 		orientation: 'horizontal'
+		StencilView:
+			GameGridView:
+				id: ggview
+		VertLine:
 		BoxLayout:
 			id: side_panel
 			orientation: 'vertical'
 			size_hint_x: None
 			width: 320
-		VertLine:
-		StencilView:
-			GameGridView:
-				id: ggview
-	NewPieceBox:
-		id: new_piece_box

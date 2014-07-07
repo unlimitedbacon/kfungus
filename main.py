@@ -180,10 +180,13 @@ class PlayerWidget(Widget):
 	icon = ObjectProperty(None)
 	name_label = ObjectProperty(None)
 
+class ButtonsGrid(BoxLayout):
+	pass
+
 class FungusGame(FloatLayout):
 	side_panel = ObjectProperty(None)
 	ggview = ObjectProperty(None)
-	new_piece_box = ObjectProperty(None)
+	#new_piece_box = ObjectProperty(None)
 	ghost = None
 	grid = Grid()
 	players = []
@@ -217,10 +220,10 @@ class FungusGame(FloatLayout):
 			# Add dividers
 			if n < len(self.players)-1:
 				self.side_panel.add_widget( HorizLine() )
-		# Add settings button to side panel
-		sbutton = Button( text='Settings', size_hint_y=None, height=100 )
-		sbutton.bind( on_press=app.open_settings )
-		self.side_panel.add_widget( sbutton )
+		# Add box and buttons to side panel
+		self.new_piece_box = NewPieceBox()
+		self.side_panel.add_widget( self.new_piece_box )
+		self.side_panel.add_widget( ButtonsGrid() )
 		# Choose random starting player
 		self.curr_player_num = randint( 0, len(self.players)-1 )
 		self.curr_player = self.players[ self.curr_player_num ]
@@ -258,8 +261,11 @@ class FungusGame(FloatLayout):
 		super(FungusGame, self).on_touch_up(touch)
 		# If player taps the box, rotate new piece
 		if self.new_piece_box.collide_point(*touch.pos):
-			self.new_piece.rotate()
-			self.new_piece_box.grid.setup( self.new_piece, self.curr_player.color )
+			self.rotate_new_piece()
+	
+	def rotate_new_piece(self):
+		self.new_piece.rotate()
+		self.update_new_piece_box()
 
 	def place_block(self, x, y):
 		r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
@@ -291,9 +297,6 @@ class FungusGame(FloatLayout):
 	
 	def update_new_piece_box(self):
 		box = self.new_piece_box
-		height = int(app.config.get('graphics', 'height'))
-		n = len(self.players)
-		box.y = height - (height-100)/n*(self.curr_player_num+1) + ((height-100)/n-box.height)/2
 		box.grid.setup( self.new_piece, self.curr_player.color )
 
 	
