@@ -158,7 +158,10 @@ class Ghost(Scatter):
 			
 	def on_touch_up(self, touch):
 		super(Ghost, self).on_touch_up(touch)
-		x, y = self.parent.ggview.global_coords_to_block( *touch.pos )
+		scale = self.parent.ggview.scale
+		t_x = touch.x - self.ghost_grid.cols*sprite_size*scale
+		t_y = touch.y + self.ghost_grid.rows*sprite_size*scale
+		x, y = self.parent.ggview.global_coords_to_block( t_x, t_y )
 		self.parent.place_block( x, y )
 		self.parent.remove_widget(self)
 
@@ -168,10 +171,11 @@ class Ghost(Scatter):
 		s_x, s_y = self.parent.ggview.gglayout.size
 		scale = self.parent.ggview.scale
 		if g_x > 0 and g_x < s_x and g_y > 0 and g_y < s_y:
-			self.x = int(g_x/sprite_size)*sprite_size*scale + self.parent.ggview.x
-			self.y = int(g_y/sprite_size)*sprite_size*scale + self.parent.ggview.y
+			self.x = (int(g_x/sprite_size)-self.ghost_grid.cols)*sprite_size*scale + self.parent.ggview.x
+			self.y = (int(g_y/sprite_size)+self.ghost_grid.rows)*sprite_size*scale + self.parent.ggview.y
 		else:
-			self.center = touch.pos 
+			self.x = touch.x - self.width - sprite_size
+			self.y = touch.y + self.ghost_grid.rows*sprite_size
 
 class NewPieceBox(Widget):
 	grid = ObjectProperty(None)
