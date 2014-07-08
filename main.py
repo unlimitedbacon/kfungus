@@ -170,9 +170,9 @@ class Ghost(Scatter):
 		g_x, g_y = self.parent.ggview.to_local(*touch.pos)
 		s_x, s_y = self.parent.ggview.gglayout.size
 		scale = self.parent.ggview.scale
-		if g_x > 0 and g_x < s_x and g_y > 0 and g_y < s_y:
-			self.x = (int(g_x/sprite_size)-self.ghost_grid.cols)*sprite_size*scale + self.parent.ggview.x
-			self.y = (int(g_y/sprite_size)+self.ghost_grid.rows)*sprite_size*scale + self.parent.ggview.y
+		if g_x > sprite_size and g_x < s_x+sprite_size and g_y > -sprite_size and g_y < s_y-sprite_size:
+			self.x = (g_x//sprite_size-self.ghost_grid.cols)*sprite_size*scale + self.parent.ggview.x
+			self.y = (g_y//sprite_size+self.ghost_grid.rows)*sprite_size*scale + self.parent.ggview.y
 		else:
 			self.x = touch.x - self.width - sprite_size
 			self.y = touch.y + self.ghost_grid.rows*sprite_size
