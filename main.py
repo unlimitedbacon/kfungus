@@ -86,17 +86,17 @@ class GridBlock(FloatLayout):
 		self.update_sprite()
 	def on_background(self, instance, value):
 		if value:
-			self.grid_background.source = 'Grid/block.png'
+			self.grid_background.source = 'Graphics/Grid/block.png'
 		else:
-			self.grid_background.source = 'blank.png'
+			self.grid_background.source = 'Graphics/blank.png'
 	def update_sprite(self):
 		if self.fungus == 'None':
-			self.sprite.source = 'blank.png'
+			self.sprite.source = 'Graphics/blank.png'
 		else:
 			if self.neighbors == '':
-				self.sprite.source = 'atlas://'+self.fungus+'/'+self.ftype+'/x'
+				self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/x'
 			else:
-				self.sprite.source = 'atlas://'+self.fungus+'/'+self.ftype+'/'+self.neighbors
+				self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/'+self.neighbors
 
 # Drag and zoomable view of the entire game grid
 class GameGridView(Scatter):
@@ -188,7 +188,7 @@ class PlayerWidget(Widget):
 	def update(self, player):
 		self.bites_grid.clear_widgets()
 		for x in range(player.bites):
-			self.bites_grid.add_widget( Image(source='atlas://Bite/norm/x') )
+			self.bites_grid.add_widget( Image(source='atlas://Graphics/Bite/norm/x') )
 
 class ButtonsGrid(BoxLayout):
 	pass
@@ -226,7 +226,7 @@ class FungusGame(FloatLayout):
 			p = self.players[n]
 			p.panel = PlayerWidget()
 			p.panel.name_label.text = p.name
-			p.panel.icon.source = 'atlas://'+p.color+'/home/x'
+			p.panel.icon.source = 'atlas://Graphics/'+p.color+'/home/x'
 			p.panel.update( p )
 			self.side_panel.add_widget( p.panel )
 			# Add dividers

@@ -9,11 +9,11 @@
 	Image:
 		id: grid_background
 		pos: self.parent.pos
-		source: 'Grid/block.png'
+		source: 'Graphics/Grid/block.png'
 	Image:
 		id: sprite
 		pos: self.parent.pos
-		source: 'blank.png'
+		source: 'Graphics/blank.png'
 
 <GameGridView>:
 	do_rotation: False
@@ -68,14 +68,20 @@
 	size_hint_y: None
 	height: 100
 	Button:
-		text: "Settings"
 		on_press: app.open_settings()
+		Image:
+			source: 'Graphics/settings.png'
+			center: self.parent.center
 	Button:
-		text: "Bite"
 		on_press: app.game.toggle_bite_mode()
+		Image:
+			source: 'Graphics/Bite/norm-0.png'
+			center: self.parent.center
 	Button:
-		text: "Rotate"
 		on_press: app.game.rotate_new_piece()
+		Image:
+			source: 'Graphics/rotate.png'
+			center: self.parent.center
 
 <PlayerWidget>:
 	name_label: name_label

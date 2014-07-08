@@ -29,7 +29,7 @@ source.include_exts = py,png,jpg,kv,atlas
 #version.filename = %(source.dir)s/main.py
 
 # (str) Application versioning (method 2)
-version = 0.0.4
+version = 0.0.6
 
 # (list) Application requirements
 requirements = kivy
@@ -38,10 +38,10 @@ requirements = kivy
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/splash.png
+presplash.filename = %(source.dir)s/Graphics/splash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/icon.png
+icon.filename = %(source.dir)s/Graphics/icon.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = landscape
