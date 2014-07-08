@@ -77,8 +77,11 @@ class GridBlock(FloatLayout):
 	background = BooleanProperty(True)
 	sprite = ObjectProperty(None)
 	grid_background = ObjectProperty(None)
+	sammich = BooleanProperty(False)
 
 	def on_fungus(self, instance, value):
+		self.update_sprite()
+	def on_sammich(self, instance, value):
 		self.update_sprite()
 	def on_ftype(self, instance, value):
 		self.update_sprite()
@@ -91,7 +94,10 @@ class GridBlock(FloatLayout):
 			self.grid_background.source = 'Graphics/blank.png'
 	def update_sprite(self):
 		if self.fungus == 'None':
-			self.sprite.source = 'Graphics/blank.png'
+			if self.sammich:
+				self.sprite.source = 'Graphics/sammich.png'
+			else:
+				self.sprite.source = 'Graphics/blank.png'
 		else:
 			if self.neighbors == '':
 				self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/x'
@@ -252,6 +258,12 @@ class FungusGame(FloatLayout):
 			self.grid[ player.home[0] ][ player.home[1] ].fungus = player.color
 			self.grid[ player.home[0] ][ player.home[1] ].ftype = 'home'
 
+		# Add Sandwiches in corners
+		self.grid[ 0 ][ 0 ].sammich = True
+		self.grid[ 0 ][ grid_size_x-1 ].sammich = True
+		self.grid[ grid_size_y-1 ][ 0 ].sammich = True
+		self.grid[ grid_size_y-1 ][ grid_size_x-1 ].sammich = True
+
 		self.ggview.setup(self.grid)
 
 		# Choose random starting piece
@@ -288,7 +300,7 @@ class FungusGame(FloatLayout):
 			if r:
 				self.toggle_bite_mode()
 		else:
-			r = self.grid.place_block( self.new_piece, self.curr_player.color, x, y )
+			r = self.grid.place_block( self.new_piece, self.curr_player, x, y )
 		if r:
 			self.check_pulse()
 			self.grid.imperial_census( self.players )

@@ -19,7 +19,7 @@ class Player():
 		self.home = home
 
 class Grid(list):
-	def place_block(self, new_piece, color, x, y):
+	def place_block(self, new_piece, player, x, y):
 		t_height = len(new_piece)
 		t_width = len(new_piece[0])
 		# Check boundries
@@ -43,22 +43,22 @@ class Grid(list):
 					# Check above current space
 					if (y+ty-1) >= 0:		# Make sure your not checking a nonexistent space
 						cell_above = self[y+ty-1][x+tx]
-						if cell_above.fungus == color:
+						if cell_above.fungus == player.color:
 							contact = True
 					# Below
 					if (y+ty+1) < grid_size_y:
 						cell_below = self[y+ty+1][x+tx]
-						if cell_below.fungus == color:
+						if cell_below.fungus == player.color:
 							contact = True
 					# Left
 					if (x+tx-1) >=0:
 						cell_left = self[y+ty][x+tx-1]
-						if cell_left.fungus == color:
+						if cell_left.fungus == player.color:
 							contact = True
 					# Right
 					if (x+tx+1) < grid_size_x:
 						cell_right = self[y+ty][x+tx+1]
-						if cell_right.fungus == color:
+						if cell_right.fungus == player.color:
 							contact = True
 		if contact == False:
 			return False
@@ -66,12 +66,17 @@ class Grid(list):
 		for ty in range(t_height):
 			for tx in range(t_width):
 				if new_piece[ty][tx]:
-					self[y+ty][x+tx].fungus = color
+					block = self[y+ty][x+tx]
+					block.fungus = player.color
+					# Eat sandwich
+					if block.sammich:
+						player.bites += 1
+						block.sammich = False
 		# Run eat() for each new square
 		for ty in range(t_height):
 			for tx in range(t_width):
 				if new_piece[ty][tx]:
-					self.eat( color, x+tx, y+ty )
+					self.eat( player.color, x+tx, y+ty )
 		self.update_neighbors()
 		return True
 
