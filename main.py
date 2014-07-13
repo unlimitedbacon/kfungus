@@ -1,3 +1,10 @@
+#!/usr/bin/python2
+#
+# FUNGUS
+#
+# A modern clone of NetFungus. Sort of a combination between Tetris and Reversi,
+# with networked multiplayer
+
 import kivy
 kivy.require('1.8.0')
 
@@ -17,10 +24,16 @@ from kivy.uix.settings import SettingsWithSidebar
 from kivy.animation import Animation
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.graphics import Color, Rectangle
+# install_twisted_reactor must be called before importing and using the reactor
+from kivy.support import install_twisted_reactor
+install_twisted_reactor()
+
+from twisted.internet import reactor
 
 from tetrominoes import tetros
 from game import *
 from settings import settings_json
+from net import *
 
 # Set window to same resolution as Nexus 4
 #Config.set('graphics','width','1280')
@@ -341,11 +354,14 @@ class FungusGame(FloatLayout):
 	
 	
 class FungusApp(App):
+	connection = None
+
 	def build(self):
 		self.icon = 'icon.png'
 		#self.use_kivy_settings = False
 		self.game = FungusGame()
 		self.game.new_game( self.config.get('game', 'num_players') )
+		self.connect_to_server()
 		return self.game
 	
 	def build_config(self, config):
@@ -361,6 +377,20 @@ class FungusApp(App):
 	def on_config_change(self, config, section, key, value):
 		if key == 'num_players':
 			self.game.new_game(value)
+	
+	def connect_to_server(self):
+		reactor.connectTCP('localhost', 1701, NetFactory(self))
+	
+	def on_connection(self, connection):
+		self.connection = connection
+		print( 'App connected succesfully' )
+	
+	def send_message(self, *args):
+		self.connection.transmit( 'Hi' )
+	
+	def get_message(self, data):
+		print(data)
+	
 
 if __name__ == '__main__':
 	app = FungusApp()
