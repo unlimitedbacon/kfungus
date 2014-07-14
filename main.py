@@ -224,8 +224,14 @@ class FungusGame(FloatLayout):
 	curr_player_num = 0
 	new_piece = tetros[0]
 	bite_mode = False
+	pause = False
 
 	def new_game(self, num_players):
+		# Drop network connection if open
+		try:
+			app.connection.transport.loseConnection()
+		except AttributeError:
+			pass
 		# Clear everything
 		self.grid = Grid()
 		self.side_panel.clear_widgets()
@@ -257,9 +263,6 @@ class FungusGame(FloatLayout):
 		self.new_piece_box = NewPieceBox()
 		self.side_panel.add_widget( self.new_piece_box )
 		self.side_panel.add_widget( ButtonsGrid() )
-		# Choose random starting player
-		self.curr_player_num = randint( 0, len(self.players)-1 )
-		self.curr_player = self.players[ self.curr_player_num ]
 		# Initialize matrix of block objects.
 		# Because of the way GridLayout fills itself, coordinates are [Y][X]
 		# from top left corner.
@@ -282,22 +285,34 @@ class FungusGame(FloatLayout):
 		self.ggview.setup(self.grid)
 
 		# Choose random starting piece
+		# These values will be overwritten if networking is enabled
 		self.new_piece = tetros[ randint(0,9) ]
+		# Choose random starting player
+		self.curr_player_num = randint( 0, len(self.players)-1 )
+		self.curr_player = self.players[ self.curr_player_num ]
 
-		self.update_new_piece_box()
+		# Initialize Networking
+		if app.config.get('game', 'enable_networking'):
+			app.connect_to_server()
+			self.pause = True				# Pause game until server gets its act together
+		else:
+			self.update_new_piece_box()
 	
 	def on_touch_down(self, touch):
 		super(FungusGame, self).on_touch_down(touch)
-		# If player is trying to drag the new piece, generate ghost
-		if self.new_piece_box.collide_point(*touch.pos):
-			self.ghost = Ghost()
-			self.ghost.center = self.new_piece_box.center
-			self.ghost.scale = self.ggview.scale
-			if self.bite_mode:
-				self.ghost.setup( [[True]], 'Bite' )
-			else:
-				self.ghost.setup( self.new_piece, self.curr_player.color )
-			self.add_widget(self.ghost)
+		# Don't accept input if its a network player's turn
+		# or if the game is on hold
+		if self.curr_player.local and not self.pause:
+			# If player is trying to drag the new piece, generate ghost
+			if self.new_piece_box.collide_point(*touch.pos):
+				self.ghost = Ghost()
+				self.ghost.center = self.new_piece_box.center
+				self.ghost.scale = self.ggview.scale
+				if self.bite_mode:
+					self.ghost.setup( [[True]], 'Bite' )
+				else:
+					self.ghost.setup( self.new_piece, self.curr_player.color )
+				self.add_widget(self.ghost)
 	
 	def on_touch_up(self, touch):
 		super(FungusGame, self).on_touch_up(touch)
@@ -306,14 +321,15 @@ class FungusGame(FloatLayout):
 			self.rotate_new_piece()
 	
 	def rotate_new_piece(self):
-		self.new_piece.rotate()
-		self.update_new_piece_box()
+		# Don't accept input if its a network player's turn
+		# or if the game is on hold
+		if self.curr_player.local and not self.pause:
+			self.new_piece.rotate()
+			self.update_new_piece_box()
 
 	def place_block(self, x, y):
 		if self.bite_mode:
 			r = self.grid.bite( self.curr_player, x, y )
-			if r:
-				self.toggle_bite_mode()
 		else:
 			r = self.grid.place_block( self.new_piece, self.curr_player, x, y )
 		if r:
@@ -323,15 +339,19 @@ class FungusGame(FloatLayout):
 			self.next_turn()
 	
 	def toggle_bite_mode(self):
-		self.bite_mode = not self.bite_mode
-		self.update_new_piece_box()
+		# Don't accept input if its a network player's turn
+		# or if the game is on hold
+		if self.curr_player.local and not self.pause:
+			self.bite_mode = not self.bite_mode
+			self.update_new_piece_box()
 	
 	def next_turn(self):
-		self.curr_player_num += 1
+		self.curr_player_num += 1					# Increment player number
 		if self.curr_player_num >= len(self.players):
 			self.curr_player_num = 0
-		self.curr_player = self.players[ self.curr_player_num ]
-		self.new_piece = tetros[ randint(0,9) ]
+		self.curr_player = self.players[ self.curr_player_num ]		# Set current player
+		self.new_piece = tetros[ randint(0,9) ]				# Generate new random piece
+		self.bite_mode = False						# Disable bite mode
 		self.update_new_piece_box()
 	
 	def check_pulse(self):
@@ -362,11 +382,10 @@ class FungusApp(App):
 		#self.use_kivy_settings = False
 		self.game = FungusGame()
 		self.game.new_game( self.config.get('game', 'num_players') )
-		if self.config.get('game', 'enable_networking'):
-			self.connect_to_server()
 		return self.game
 	
 	def build_config(self, config):
+		config.setdefaults('game', {'username': 'Anonymous Coward'})
 		config.setdefaults('game', {'num_players': '4' })
 		config.setdefaults('game', {'enable_networking': True })
 		config.setdefaults('graphics', {'width': 1280,

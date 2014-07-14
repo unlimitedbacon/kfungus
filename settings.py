@@ -1,6 +1,11 @@
 import json
 
 settings_json = json.dumps([
+	{'type': 'string',
+	 'title': 'Name',
+	 'desc': 'Choose a name',
+	 'section': 'game',
+	 'key': 'username'},
 	{'type': 'options',
 	 'title': 'Number of Players',
 	 'desc': 'Number of players',

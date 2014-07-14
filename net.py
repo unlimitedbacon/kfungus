@@ -4,6 +4,7 @@ from twisted.protocols.basic import LineReceiver
 class FungusClient(LineReceiver):
 	def __init__(self, factory):
 		self.factory = factory
+		self.game = factory.app.game
 
 	def transmit(self, message):
 		# Python 3 workaround
@@ -11,12 +12,37 @@ class FungusClient(LineReceiver):
 		# Twisted was written for Python 2, where strings are bytestrings
 		# but in Python 3 they are unicode.
 		self.sendLine(message.encode("utf-8"))
+		print(message)
 
 	def connectionMade(self):
 		self.factory.app.on_connection(self)
 	
 	def lineReceived(self, data):
+		data = data.decode("utf-8")
 		self.factory.app.get_message(data)
+
+		# Interpret Commands
+		if 'USERNAME:' in data:
+			name = self.factory.app.config.get('game', 'username')
+			self.transmit(name)
+		elif 'NUM_PLAYERS:' in data:
+			num = self.factory.app.config.get('game', 'num_players')
+			self.transmit(num)
+		elif 'YOUR_NUM:' in data:
+			command, num = data.split(": ")
+			num = int(num[0])
+			self.game.players[num].local = True
+		elif 'START:' in data:
+			command, start_player = data.split(": ")
+			start_player = int(start_player[0])
+			# This should all be moved out of the network code
+			self.game.curr_player_num = start_player
+			self.game.curr_player = self.game.players[ start_player ]
+			self.game.pause = False
+			self.game.update_new_piece_box()
+		elif 'ERROR:' in data:
+			command, message = data.split(": ")
+			self.factory.app.errorPopup( 'Notice from server', message )
 
 # Try protocol.ReconnectingClientFactory to handle lost connections
 class NetFactory(protocol.ClientFactory):
