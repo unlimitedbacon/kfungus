@@ -12,15 +12,17 @@ from random import randint
 
 from kivy.app import App
 from kivy.config import Config
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.widget import Widget
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 from kivy.uix.scatter import Scatter
 from kivy.uix.settings import SettingsWithSidebar
+from kivy.uix.widget import Widget
 from kivy.animation import Animation
 from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.graphics import Color, Rectangle
@@ -352,20 +354,21 @@ class FungusGame(FloatLayout):
 		else:
 			box.grid.setup( self.new_piece, self.curr_player.color )
 	
-	
 class FungusApp(App):
-	connection = None
+	connection = None		# Twisted Protocol instance
 
 	def build(self):
 		self.icon = 'icon.png'
 		#self.use_kivy_settings = False
 		self.game = FungusGame()
 		self.game.new_game( self.config.get('game', 'num_players') )
-		self.connect_to_server()
+		if self.config.get('game', 'enable_networking'):
+			self.connect_to_server()
 		return self.game
 	
 	def build_config(self, config):
 		config.setdefaults('game', {'num_players': '4' })
+		config.setdefaults('game', {'enable_networking': True })
 		config.setdefaults('graphics', {'width': 1280,
 				   		'height': 768})
 	
@@ -377,6 +380,23 @@ class FungusApp(App):
 	def on_config_change(self, config, section, key, value):
 		if key == 'num_players':
 			self.game.new_game(value)
+	
+	def errorPopup(self, title, text):
+		popup = Popup( title = title,
+			       size_hint = (None, None),
+			       size = (600, 400) )
+		# Button to dismiss message
+		button = Button( text='Ok',
+			         size_hint_y=None,
+			         height=100 )
+		button.bind( on_press=popup.dismiss )
+		# Layout contents of popup
+		content = BoxLayout( orientation='vertical' )
+		content.add_widget( Label(text=text) )
+		content.add_widget( button )
+		# Open popup
+		popup.content = content
+		popup.open()
 	
 	def connect_to_server(self):
 		reactor.connectTCP('localhost', 1701, NetFactory(self))

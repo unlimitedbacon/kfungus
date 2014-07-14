@@ -12,6 +12,7 @@ class Player():
 	active = False
 	alive = True
 	panel = None
+	local = False		# Local player or network player
 
 	def __init__(self, color, name, home):
 		self.color = color

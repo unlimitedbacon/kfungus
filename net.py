@@ -31,9 +31,11 @@ class NetFactory(protocol.ClientFactory):
 		return FungusClient(self)
 
 	def clientConnectionLost(self, connector, reason):
+		self.app.errorPopup( 'Connection Lost', reason.getErrorMessage() )
 		print('Connection Lost')
 		print(reason)
 
 	def clientConnectionFailed(self, connector, reason):
+		self.app.errorPopup( 'Connection Failed', reason.getErrorMessage() )
 		print('Connection Failed')
 		print(reason)
