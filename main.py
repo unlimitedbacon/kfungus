@@ -224,30 +224,36 @@ class FungusGame(FloatLayout):
 	curr_player_num = 0
 	new_piece = tetros[0]
 	bite_mode = False
-	pause = False
+	pause = True
 
-	def new_game(self, num_players):
-		# Drop network connection if open
-		try:
-			app.connection.transport.loseConnection()
-		except AttributeError:
-			pass
+	def init_game(self, num_players):
+		# Don't let player make any moves until we are told to start the game
+		self.pause = True
+
 		# Clear everything
 		self.grid = Grid()
 		self.side_panel.clear_widgets()
+
 		# Setup players
-		if num_players == '4':
+		if num_players == 4:
 			self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
 					 Player(    'Red', 'E Coli',      [ 5, grid_size_x-6 ] ),
 					 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] ),
 					 Player( 'Yellow', 'Penicillium', [ grid_size_y-6, 5 ] )]
-		elif num_players == '3':
+		elif num_players == 3:
 			self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
 					 Player(    'Red', 'E Coli',      [ 5, grid_size_x-6 ] ),
 					 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] )]
 		else:
 			self.players = [ Player(  'Green', 'Algae',       [ 5, 5 ] ),
 					 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] )]
+
+		# Set all players to local if this is not a networked game
+		net = app.config.getboolean('game', 'enable_networking')
+		if not net:
+			for player in self.players:
+				player.local = True
+
 		# Initialize player widgets and add them to the side panel
 		for n in range(len(self.players)):
 			p = self.players[n]
@@ -259,10 +265,12 @@ class FungusGame(FloatLayout):
 			# Add dividers
 			if n < len(self.players)-1:
 				self.side_panel.add_widget( HorizLine() )
+
 		# Add box and buttons to side panel
 		self.new_piece_box = NewPieceBox()
 		self.side_panel.add_widget( self.new_piece_box )
 		self.side_panel.add_widget( ButtonsGrid() )
+
 		# Initialize matrix of block objects.
 		# Because of the way GridLayout fills itself, coordinates are [Y][X]
 		# from top left corner.
@@ -283,36 +291,34 @@ class FungusGame(FloatLayout):
 		self.grid[ grid_size_y-1 ][ grid_size_x-1 ].sammich = True
 
 		self.ggview.setup(self.grid)
-
-		# Choose random starting piece
-		# These values will be overwritten if networking is enabled
-		self.new_piece = tetros[ randint(0,9) ]
-		# Choose random starting player
-		self.curr_player_num = randint( 0, len(self.players)-1 )
-		self.curr_player = self.players[ self.curr_player_num ]
-
-		# Initialize Networking
-		if app.config.get('game', 'enable_networking'):
-			app.connect_to_server()
-			self.pause = True				# Pause game until server gets its act together
-		else:
-			self.update_new_piece_box()
+	
+	def start_game(self, starting_player, starting_piece):
+		# Set starting piece
+		self.new_piece = tetros[ starting_piece ]
+		# Set starting player
+		self.curr_player_num = starting_player
+		self.curr_player = self.players[ starting_player ]
+		# Update UI
+		self.update_new_piece_box()
+		# Start game
+		self.pause = False
 	
 	def on_touch_down(self, touch):
 		super(FungusGame, self).on_touch_down(touch)
 		# Don't accept input if its a network player's turn
 		# or if the game is on hold
-		if self.curr_player.local and not self.pause:
-			# If player is trying to drag the new piece, generate ghost
-			if self.new_piece_box.collide_point(*touch.pos):
-				self.ghost = Ghost()
-				self.ghost.center = self.new_piece_box.center
-				self.ghost.scale = self.ggview.scale
-				if self.bite_mode:
-					self.ghost.setup( [[True]], 'Bite' )
-				else:
-					self.ghost.setup( self.new_piece, self.curr_player.color )
-				self.add_widget(self.ghost)
+		if not self.pause:
+			if self.curr_player.local:
+				# If player is trying to drag the new piece, generate ghost
+				if self.new_piece_box.collide_point(*touch.pos):
+					self.ghost = Ghost()
+					self.ghost.center = self.new_piece_box.center
+					self.ghost.scale = self.ggview.scale
+					if self.bite_mode:
+						self.ghost.setup( [[True]], 'Bite' )
+					else:
+						self.ghost.setup( self.new_piece, self.curr_player.color )
+					self.add_widget(self.ghost)
 	
 	def on_touch_up(self, touch):
 		super(FungusGame, self).on_touch_up(touch)
@@ -323,9 +329,10 @@ class FungusGame(FloatLayout):
 	def rotate_new_piece(self):
 		# Don't accept input if its a network player's turn
 		# or if the game is on hold
-		if self.curr_player.local and not self.pause:
-			self.new_piece.rotate()
-			self.update_new_piece_box()
+		if not self.pause:
+			if self.curr_player.local:
+				self.new_piece.rotate()
+				self.update_new_piece_box()
 
 	def place_block(self, x, y):
 		if self.bite_mode:
@@ -341,9 +348,10 @@ class FungusGame(FloatLayout):
 	def toggle_bite_mode(self):
 		# Don't accept input if its a network player's turn
 		# or if the game is on hold
-		if self.curr_player.local and not self.pause:
-			self.bite_mode = not self.bite_mode
-			self.update_new_piece_box()
+		if not self.pause:
+			if self.curr_player.local:
+				self.bite_mode = not self.bite_mode
+				self.update_new_piece_box()
 	
 	def next_turn(self):
 		self.curr_player_num += 1					# Increment player number
@@ -379,10 +387,31 @@ class FungusApp(App):
 
 	def build(self):
 		self.icon = 'icon.png'
-		#self.use_kivy_settings = False
+		#self.use_kivy_settings = False				# Disable kivy tab in settings screen
 		self.game = FungusGame()
-		self.game.new_game( self.config.get('game', 'num_players') )
+		self.newGame()
 		return self.game
+	
+	def newGame(self):
+		# Drop network connection if open
+		try:
+			app.connection.transport.loseConnection()
+		except AttributeError:
+			pass
+			
+		num_players = self.config.getint('game', 'num_players')
+		self.game.init_game( num_players )
+
+		# Initialize Networking
+		if self.config.getboolean('game', 'enable_networking'):
+			# If this is a networked game, things will be initialized by the server
+			self.connect_to_server()
+		else:
+			# If this is not a networked game, then we choose a random starting player
+			# and piece and get the ball rolling
+			player = randint(0,num_players-1)
+			piece = randint(0,9)
+			self.game.start_game( player, piece )
 	
 	def build_config(self, config):
 		config.setdefaults('game', {'username': 'Anonymous Coward'})
@@ -397,8 +426,8 @@ class FungusApp(App):
 					data=settings_json)
 	
 	def on_config_change(self, config, section, key, value):
-		if key == 'num_players':
-			self.game.new_game(value)
+		if key == 'num_players' or key == 'enable_networking':
+			self.newGame()
 	
 	def errorPopup(self, title, text):
 		popup = Popup( title = title,

@@ -22,10 +22,12 @@ class FungusClient(LineReceiver):
 		self.factory.app.get_message(data)
 
 		# Interpret Commands
-		if 'USERNAME:' in data:
+		# Interrogatives have a ?
+		# Imperatives have a :
+		if 'USERNAME?' in data:
 			name = self.factory.app.config.get('game', 'username')
 			self.transmit(name)
-		elif 'NUM_PLAYERS:' in data:
+		elif 'NUM_PLAYERS?' in data:
 			num = self.factory.app.config.get('game', 'num_players')
 			self.transmit(num)
 		elif 'YOUR_NUM:' in data:
@@ -33,13 +35,11 @@ class FungusClient(LineReceiver):
 			num = int(num[0])
 			self.game.players[num].local = True
 		elif 'START:' in data:
-			command, start_player = data.split(": ")
+			command, options = data.split(": ")
+			start_player, start_piece = options.split(", ")
 			start_player = int(start_player[0])
-			# This should all be moved out of the network code
-			self.game.curr_player_num = start_player
-			self.game.curr_player = self.game.players[ start_player ]
-			self.game.pause = False
-			self.game.update_new_piece_box()
+			start_piece = int(start_piece[0])
+			self.game.start_game( start_player, start_piece )
 		elif 'ERROR:' in data:
 			command, message = data.split(": ")
 			self.factory.app.errorPopup( 'Notice from server', message )
