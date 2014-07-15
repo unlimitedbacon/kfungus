@@ -19,7 +19,7 @@ class FungusClient(LineReceiver):
 	
 	def lineReceived(self, data):
 		data = data.decode("utf-8")
-		self.factory.app.get_message(data)
+		print(data)
 
 		# Interpret Commands
 		# Interrogatives have a ?
@@ -56,6 +56,10 @@ class FungusClient(LineReceiver):
 		elif 'ROT:' in data:
 			self.game.new_piece.rotate()
 			self.game.update_new_piece_box()			# This could be removed to speed things up
+		elif 'TETRO:' in data:
+			command, tetro_num = data.split(": ")
+			tetro_num = int(tetro_num[0])
+			self.game.set_new_piece( tetro_num )
 		elif 'ERROR:' in data:
 			command, message = data.split(": ")
 			self.factory.app.errorPopup( 'Notice from server', message )

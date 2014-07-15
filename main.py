@@ -345,7 +345,7 @@ class FungusGame(FloatLayout):
 			self.check_pulse()
 			self.grid.imperial_census( self.players )
 			self.curr_player.panel.update( self.curr_player )
-			if self.net:
+			if self.net and self.curr_player.local:			# Don't send moves if move came from net in the first place
 				app.connection.sendMove( self.bite_mode, x, y )
 			self.next_turn()
 	
@@ -362,8 +362,12 @@ class FungusGame(FloatLayout):
 		if self.curr_player_num >= len(self.players):
 			self.curr_player_num = 0
 		self.curr_player = self.players[ self.curr_player_num ]		# Set current player
-		self.new_piece = tetros[ randint(0,9) ]				# Generate new random piece
 		self.bite_mode = False						# Disable bite mode
+		if not self.net:
+			set_new_piece( randint(0,9) )				# Generate new random piece
+	
+	def set_new_piece(self, tetro_num):
+		self.new_piece = tetros[ tetro_num ]
 		self.update_new_piece_box()
 	
 	def check_pulse(self):
@@ -456,13 +460,7 @@ class FungusApp(App):
 	def on_connection(self, connection):
 		self.connection = connection
 		print( 'App connected succesfully' )
-	
-	def send_message(self, *args):
-		self.connection.transmit( 'Hi' )
-	
-	def get_message(self, data):
-		print(data)
-	
+
 
 if __name__ == '__main__':
 	app = FungusApp()
