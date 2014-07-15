@@ -40,9 +40,34 @@ class FungusClient(LineReceiver):
 			start_player = int(start_player[0])
 			start_piece = int(start_piece[0])
 			self.game.start_game( start_player, start_piece )
+		elif 'PLACE:' in data:
+			command, options = data.split(": ")
+			x, y = options.split(", ")
+			x = int(x)
+			y = int(y)
+			self.game.place_block(x,y)
+		elif 'BITE:' in data:
+			command, options = data.split(": ")
+			x, y = options.split(", ")
+			x = int(x)
+			y = int(y)
+			self.game.bite_mode = True
+			self.game.place_block(x,y)
+		elif 'ROT:' in data:
+			self.game.new_piece.rotate()
+			self.game.update_new_piece_box()			# This could be removed to speed things up
 		elif 'ERROR:' in data:
 			command, message = data.split(": ")
 			self.factory.app.errorPopup( 'Notice from server', message )
+	
+	def sendMove(self, bite_mode, x, y):
+		if bite_mode:
+			self.transmit( 'BITE: %i, %i' % (x,y) )
+		else:
+			self.transmit( 'PLACE: %i, %i' % (x,y) )
+	
+	def sendRot(self):
+		self.transmit( 'ROT:' )
 
 # Try protocol.ReconnectingClientFactory to handle lost connections
 class NetFactory(protocol.ClientFactory):

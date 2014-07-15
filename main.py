@@ -249,8 +249,8 @@ class FungusGame(FloatLayout):
 					 Player(   'Blue', 'Nanites',     [ grid_size_y-6, grid_size_x-6 ] )]
 
 		# Set all players to local if this is not a networked game
-		net = app.config.getboolean('game', 'enable_networking')
-		if not net:
+		self.net = app.config.getboolean('game', 'enable_networking')
+		if not self.net:
 			for player in self.players:
 				player.local = True
 
@@ -333,6 +333,8 @@ class FungusGame(FloatLayout):
 			if self.curr_player.local:
 				self.new_piece.rotate()
 				self.update_new_piece_box()
+				if self.net:
+					app.connection.sendRot()
 
 	def place_block(self, x, y):
 		if self.bite_mode:
@@ -343,6 +345,8 @@ class FungusGame(FloatLayout):
 			self.check_pulse()
 			self.grid.imperial_census( self.players )
 			self.curr_player.panel.update( self.curr_player )
+			if self.net:
+				app.connection.sendMove( self.bite_mode, x, y )
 			self.next_turn()
 	
 	def toggle_bite_mode(self):
