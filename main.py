@@ -41,6 +41,8 @@ from net import *
 #Config.set('graphics','width','1280')
 #Config.set('graphics','height','768')
 
+server = 'kramerica.x64.me'
+
 sprite_size = 32
 
 # Shows a single lonesome tetromino
@@ -364,7 +366,7 @@ class FungusGame(FloatLayout):
 		self.curr_player = self.players[ self.curr_player_num ]		# Set current player
 		self.bite_mode = False						# Disable bite mode
 		if not self.net:
-			set_new_piece( randint(0,9) )				# Generate new random piece
+			self.set_new_piece( randint(0,9) )			# Generate new random piece
 	
 	def set_new_piece(self, tetro_num):
 		self.new_piece = tetros[ tetro_num ]
@@ -392,6 +394,7 @@ class FungusGame(FloatLayout):
 	
 class FungusApp(App):
 	connection = None		# Twisted Protocol instance
+	waitingPopup = None		# Message to be shown while waiting for players to join game
 
 	def build(self):
 		self.icon = 'icon.png'
@@ -453,12 +456,27 @@ class FungusApp(App):
 		# Open popup
 		popup.content = content
 		popup.open()
+
+	def rhetoricalPopup(self, title, text):
+		# ... because no answer is required
+		popup = Popup( title = title,
+			       size_hint = (None, None),
+			       size = (600, 400),
+			       auto_dismiss = False )
+		# Layout contents of popup
+		content = BoxLayout( orientation='vertical' )
+		content.add_widget( Label(text=text) )
+		# Open popup
+		popup.content = content
+		popup.open()
+		return popup
 	
 	def connect_to_server(self):
-		reactor.connectTCP('localhost', 1701, NetFactory(self))
+		reactor.connectTCP( server, 1701, NetFactory(self))
 	
 	def on_connection(self, connection):
 		self.connection = connection
+		self.waitingPopup = self.rhetoricalPopup( 'Connected to Server', 'Waiting for more players...' )
 		print( 'App connected succesfully' )
 
 

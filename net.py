@@ -40,6 +40,7 @@ class FungusClient(LineReceiver):
 			start_player = int(start_player[0])
 			start_piece = int(start_piece[0])
 			self.game.start_game( start_player, start_piece )
+			self.factory.app.waitingPopup.dismiss()
 		elif 'PLACE:' in data:
 			command, options = data.split(": ")
 			x, y = options.split(", ")
