@@ -123,6 +123,7 @@
 
 <ErrorPopup>:
 	textLabel: textLabel
+	title_size: 32
 	size_hint: None, None
 	size: 600, 320
 	BoxLayout:
@@ -134,10 +135,12 @@
 			size_hint_y: None
 			height: 100
 			text: 'Ok'
+			font_size: 32
 			on_press: root.dismiss()
 
 <RhetoricalPopup>:
 	textLabel: textLabel
+	title_size: 32
 	size_hint: None, None
 	size: 600, 320
 	auto_dismiss: False
@@ -150,9 +153,10 @@
 	name3: name3
 	name4: name4
 	size_hint: None, None
-	size: 600, 161
+	size: 600, 180
 	auto_dismiss: False
 	title: 'Waiting for Other Players'
+	title_size: 32
 	GridLayout:
 		cols: 4
 		rows: 2
@@ -165,6 +169,7 @@
 		Label:
 			id: name1
 			text: 'Waiting...'
+			font_size: 24
 			italic: True
 		Image:
 			source: 'atlas://Graphics/Red/home/x'
@@ -173,6 +178,7 @@
 		Label:
 			id: name2
 			text: 'Waiting...'
+			font_size: 24
 			italic: True
 		Image:
 			source: 'atlas://Graphics/Yellow/home/x'
@@ -181,6 +187,7 @@
 		Label:
 			id: name4
 			text: 'Waiting...'
+			font_size: 24
 			italic: True
 		Image:
 			source: 'atlas://Graphics/Blue/home/x'
@@ -189,4 +196,72 @@
 		Label:
 			id: name3
 			text: 'Waiting...'
+			font_size: 24
 			italic: True
+
+<FirstPopup>:
+	size_hint: None, None
+	size: 900, 348
+	auto_dismiss: False
+	title: 'Fungus Beta'
+	title_size: 32
+	BoxLayout:
+		orientation: 'horizontal'
+		spacing: 12
+		Image:
+			source: 'Graphics/splash.png'
+			size_hint_x: None
+			width: 256
+		BoxLayout:
+			orientation: 'vertical'
+			spacing: 12
+			GridLayout:
+				cols: 3
+				rows: 2
+				spacing: 12, 0
+				Label:
+					text: 'Net:'
+					font_size: 32
+					text_size: self.size
+					valign: 'middle'
+					halign: 'center'
+				Label:
+					text: 'Players:'
+					font_size: 32
+					text_size: self.size
+					valign: 'middle'
+					halign: 'center'
+				Label:
+					text: 'Name:'
+					font_size: 32
+					text_size: self.size
+					valign: 'middle'
+					halign: 'center'
+					size_hint_x: 2
+				Switch:
+					active: app.config.getboolean('game', 'enable_networking')
+					on_active: app.config.set('game', 'enable_networking', str(self.active))
+					font_size: 32
+					size_hint_y: None
+					height: 50
+				Spinner:
+					text: app.config.get('game', 'num_players')
+					values: ('2', '3', '4')
+					on_text: app.config.set('game', 'num_players', self.text)
+					font_size: 32
+					size_hint_y: None
+					height: 50
+				TextInput:
+					text: app.config.get('game', 'username')
+					on_text: app.config.set('game', 'username', self.text)
+					valign: 'middle'
+					halign: 'center'
+					multiline: False
+					font_size: 32
+					size_hint_x: 2
+					size_hint_y: None
+					height: 50
+			Button:
+				text: 'GO!'
+				font_size: 32
+				on_press: root.go()

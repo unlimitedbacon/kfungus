@@ -444,9 +444,20 @@ class LobbyPopup(Popup):
 		elif player_num == 3:
 			self.name4.text = name
 			self.name4.italic = False
+
+# First screen shown on launch
+# Lets player choose network or local game, number of players, name
+class FirstPopup(Popup):
+	def go(self):
+		self.dismiss()
+		loadingPopup = RhetoricalPopup( 'Loading', 'Loading Stuff...' )
+		loadingPopup.open()
+		app.newGame()
+		loadingPopup.dismiss()
 	
 class FungusApp(App):
 	connection = None		# Twisted Protocol instance
+	firstPopup = None		# Setup screen
 	connectingPopup = None		# Message shown while connecting to server
 	lobbyPopup = None		# Message to be shown while waiting for players to join game
 
@@ -454,8 +465,15 @@ class FungusApp(App):
 		self.icon = 'icon.png'
 		#self.use_kivy_settings = False				# Disable kivy tab in settings screen
 		self.game = FungusGame()
-		self.newGame()
+		#self.newGame()
 		return self.game
+	
+	def on_start(self):
+		self.firstPopup = FirstPopup()
+		self.firstPopup.open()
+	
+	def on_stop(self):
+		self.config.write()
 	
 	def newGame(self):
 		# Drop network connection if open
