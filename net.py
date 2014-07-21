@@ -33,14 +33,31 @@ class FungusClient(LineReceiver):
 		elif 'YOUR_NUM:' in data:
 			command, num = data.split(": ")
 			num = int(num[0])
-			self.game.players[num].local = True
+			player = self.game.players[num]
+			# Enable local control of player
+			player.local = True
+			# Update name on side panel
+			player.name = self.factory.app.config.get('game', 'username')
+			player.panel.update( player )
+			# Update name on lobby screen
+			self.factory.app.lobbyPopup.setSelf( num )
+		elif 'NAME:' in data:
+			command, options = data.split(": ")
+			num, name = options.split(", ")
+			num = int(num[0])
+			player = self.game.players[num]
+			# Update name on side panel
+			player.name = name
+			player.panel.update( player )
+			# Update name on lobby screen
+			self.factory.app.lobbyPopup.setName( num, name )
 		elif 'START:' in data:
 			command, options = data.split(": ")
 			start_player, start_piece = options.split(", ")
 			start_player = int(start_player[0])
 			start_piece = int(start_piece[0])
 			self.game.start_game( start_player, start_piece )
-			self.factory.app.waitingPopup.dismiss()
+			self.factory.app.lobbyPopup.dismiss()
 		elif 'PLACE:' in data:
 			command, options = data.split(": ")
 			x, y = options.split(", ")
@@ -87,11 +104,12 @@ class NetFactory(protocol.ClientFactory):
 		return FungusClient(self)
 
 	def clientConnectionLost(self, connector, reason):
-		self.app.errorPopup( 'Connection Lost', reason.getErrorMessage() )
+		self.app.showErrorPopup( 'Connection Lost', reason.getErrorMessage() )
 		print('Connection Lost')
 		print(reason)
 
 	def clientConnectionFailed(self, connector, reason):
-		self.app.errorPopup( 'Connection Failed', reason.getErrorMessage() )
+		self.app.connectingPopup.dismiss()
+		self.app.showErrorPopup( 'Connection Failed', reason.getErrorMessage() )
 		print('Connection Failed')
 		print(reason)

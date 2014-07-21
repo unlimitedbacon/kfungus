@@ -120,3 +120,73 @@
 			orientation: 'vertical'
 			size_hint_x: None
 			width: 320
+
+<ErrorPopup>:
+	textLabel: textLabel
+	size_hint: None, None
+	size: 600, 320
+	BoxLayout:
+		orientation: 'vertical'
+		Label:
+			id: textLabel
+			text: 'Error'
+		Button:
+			size_hint_y: None
+			height: 100
+			text: 'Ok'
+			on_press: root.dismiss()
+
+<RhetoricalPopup>:
+	textLabel: textLabel
+	size_hint: None, None
+	size: 600, 320
+	auto_dismiss: False
+	Label:
+		id: textLabel
+
+<LobbyPopup>:
+	name1: name1
+	name2: name2
+	name3: name3
+	name4: name4
+	size_hint: None, None
+	size: 600, 161
+	auto_dismiss: False
+	title: 'Waiting for Other Players'
+	GridLayout:
+		cols: 4
+		rows: 2
+		padding: [16,16,16,16]
+		spacing: [8,8]
+		Image:
+			source: 'atlas://Graphics/Green/home/x'
+			size_hint: None, None
+			size: 32,32
+		Label:
+			id: name1
+			text: 'Waiting...'
+			italic: True
+		Image:
+			source: 'atlas://Graphics/Red/home/x'
+			size_hint: None, None
+			size: 32,32
+		Label:
+			id: name2
+			text: 'Waiting...'
+			italic: True
+		Image:
+			source: 'atlas://Graphics/Yellow/home/x'
+			size_hint: None, None
+			size: 32,32
+		Label:
+			id: name4
+			text: 'Waiting...'
+			italic: True
+		Image:
+			source: 'atlas://Graphics/Blue/home/x'
+			size_hint: None, None
+			size: 32,32
+		Label:
+			id: name3
+			text: 'Waiting...'
+			italic: True

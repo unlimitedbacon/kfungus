@@ -33,8 +33,8 @@ install_twisted_reactor()
 from twisted.internet import reactor
 
 from tetrominoes import tetros
-from game import *
 from settings import settings_json
+from game import *
 from net import *
 
 # Set window to same resolution as Nexus 4
@@ -212,6 +212,7 @@ class PlayerWidget(Widget):
 		self.bites_grid.clear_widgets()
 		for x in range(player.bites):
 			self.bites_grid.add_widget( Image(source='atlas://Graphics/Bite/norm/x') )
+		self.name_label.text = player.name
 
 class ButtonsGrid(BoxLayout):
 	pass
@@ -391,10 +392,63 @@ class FungusGame(FloatLayout):
 			box.grid.setup( [[True]], 'Bite' )
 		else:
 			box.grid.setup( self.new_piece, self.curr_player.color )
+
+# Shows error message and OK button
+class ErrorPopup(Popup):
+	textLabel = ObjectProperty(None)
+	pass
+	
+# Dialog that requires no answer
+class RhetoricalPopup(Popup):
+	textLabel = ObjectProperty(None)
+	text = '...'
+	
+	def __init__(self, title, text, **kwargs):
+		super(RhetoricalPopup, self).__init__(**kwargs)
+		self.title = title
+		self.textLabel.text = text
+
+# Shows other players as they join the game
+class LobbyPopup(Popup):
+	name1 = ObjectProperty(None)
+	name2 = ObjectProperty(None)
+	name3 = ObjectProperty(None)
+	name4 = ObjectProperty(None)
+
+	def __init__(self, **kwargs):
+		super(LobbyPopup, self).__init__(**kwargs)
+		num_players = app.config.getint('game', 'num_players')		# Maybe this should be passed as an argument
+		if num_players == 2:
+			self.name2.text = 'Nobody'
+			self.name2.color = [1,1,1,0.5]
+			self.name4.text = 'Nobody'
+			self.name4.color = [1,1,1,0.5]
+		elif num_players == 3:
+			self.name4.text = 'Nobody'	
+			self.name4.color = [1,1,1,0.5]
+	
+	def setSelf(self, num):
+		name = app.config.get('game', 'username')
+		self.setName(num, name)
+
+	def setName(self, player_num, name):
+		if player_num == 0:
+			self.name1.text = name
+			self.name1.italic = False
+		elif player_num == 1:
+			self.name2.text = name
+			self.name2.italic = False
+		elif player_num == 2:
+			self.name3.text = name
+			self.name3.italic = False
+		elif player_num == 3:
+			self.name4.text = name
+			self.name4.italic = False
 	
 class FungusApp(App):
 	connection = None		# Twisted Protocol instance
-	waitingPopup = None		# Message to be shown while waiting for players to join game
+	connectingPopup = None		# Message shown while connecting to server
+	lobbyPopup = None		# Message to be shown while waiting for players to join game
 
 	def build(self):
 		self.icon = 'icon.png'
@@ -440,43 +494,21 @@ class FungusApp(App):
 		if key == 'num_players' or key == 'enable_networking':
 			self.newGame()
 	
-	def errorPopup(self, title, text):
-		popup = Popup( title = title,
-			       size_hint = (None, None),
-			       size = (600, 400) )
-		# Button to dismiss message
-		button = Button( text='Ok',
-			         size_hint_y=None,
-			         height=100 )
-		button.bind( on_press=popup.dismiss )
-		# Layout contents of popup
-		content = BoxLayout( orientation='vertical' )
-		content.add_widget( Label(text=text) )
-		content.add_widget( button )
-		# Open popup
-		popup.content = content
+	def showErrorPopup(self, title, text):
+		popup = ErrorPopup( title = title )
+		popup.textLabel.text = text
 		popup.open()
 
-	def rhetoricalPopup(self, title, text):
-		# ... because no answer is required
-		popup = Popup( title = title,
-			       size_hint = (None, None),
-			       size = (600, 400),
-			       auto_dismiss = False )
-		# Layout contents of popup
-		content = BoxLayout( orientation='vertical' )
-		content.add_widget( Label(text=text) )
-		# Open popup
-		popup.content = content
-		popup.open()
-		return popup
-	
 	def connect_to_server(self):
 		reactor.connectTCP( server, 1701, NetFactory(self))
+		self.connectingPopup = RhetoricalPopup( 'Connecting...', 'Connecting to %s' % server )
+		self.connectingPopup.open()
 	
 	def on_connection(self, connection):
 		self.connection = connection
-		self.waitingPopup = self.rhetoricalPopup( 'Connected to Server', 'Waiting for more players...' )
+		self.connectingPopup.dismiss()
+		self.lobbyPopup = LobbyPopup()
+		self.lobbyPopup.open()
 		print( 'App connected succesfully' )
 
 
