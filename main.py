@@ -268,8 +268,7 @@ class FungusGame(FloatLayout):
 			p.panel.update( p )
 			self.side_panel.add_widget( p.panel )
 			# Add dividers
-			if n < len(self.players)-1:
-				self.side_panel.add_widget( HorizLine() )
+			self.side_panel.add_widget( HorizLine() )
 
 		# Add box and buttons to side panel
 		self.new_piece_box = NewPieceBox()
@@ -394,6 +393,7 @@ class FungusGame(FloatLayout):
 			box.grid.setup( [[True]], 'Bite' )
 		else:
 			box.grid.setup( self.new_piece, self.curr_player.color )
+		box.grid.center = box.center
 
 # Shows error message and OK button
 class ErrorPopup(Popup):

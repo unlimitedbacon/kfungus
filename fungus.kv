@@ -30,14 +30,18 @@
 	size_hint_x: None
 	width: 4
 	canvas:
+		Color:
+			rgba: 0.1843, 0.6549, 0.8314, 1
 		Rectangle:
 			pos: self.pos
 			size: self.size
 
 <HorizLine>:
 	size_hint_y: None
-	height: 4
+	height: 2
 	canvas:
+		Color:
+			rgba: 1, 1, 1, 0.3451
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -53,11 +57,11 @@
 
 <NewPieceBox>:
 	grid: grid
-	size_hint_y: None
-	height: 136
-	canvas:
-		Line:
-			points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
+	#size_hint_y: None
+	#height: 136
+	#canvas:
+	#	Line:
+	#		points: [self.x,self.y, self.x+self.width,self.y, self.x+self.width,self.y+self.height, self.x,self.y+self.height, self.x,self.y]
 	TetroGrid:
 		id: grid
 		center: self.parent.center
@@ -86,26 +90,28 @@
 	name_label: name_label
 	bites_grid: bites_grid
 	icon: icon
+	size_hint_y: None
+	height: 16+32+16+32+16
 	orientation: 'vertical'
 	Image:
 		id: icon
 		allow_stretch: True
-		#size: self.texture_size
-		size: '32dp','32dp'
+		size: self.texture_size
+		#size: '32dp','32dp'
 		top: self.parent.top-16
 		x: self.parent.x+16
 	Label:
 		id: name_label
 		size: self.texture_size
-		x: self.parent.x + 32 + dp(32)
-		y: self.parent.top - self.height - (16 + dp(32)/2 - self.font_size/2)
+		x: self.parent.x + 32 + 32
+		y: self.parent.top - self.height - (16 + 32/2 - self.font_size/2)
 		text: 'Algae'
 	GridLayout:
 		id: bites_grid
 		cols: 8
 		col_default_width: 32
 		x: self.parent.x + 16
-		y: self.parent.top - self.height - dp(32)
+		y: self.parent.top - self.height - 32
 
 <FungusGame>:
 	side_panel: side_panel
