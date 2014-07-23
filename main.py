@@ -5,6 +5,8 @@
 # A modern clone of NetFungus. Sort of a combination between Tetris and Reversi,
 # with networked multiplayer
 
+__version__ = '0.3'
+
 import kivy
 kivy.require('1.8.0')
 
@@ -417,13 +419,13 @@ class LobbyPopup(Popup):
 
 	def __init__(self, **kwargs):
 		super(LobbyPopup, self).__init__(**kwargs)
-		num_players = app.config.getint('game', 'num_players')		# Maybe this should be passed as an argument
-		if num_players == 2:
+		self.num_players = app.config.getint('game', 'num_players')		# Maybe this should be passed as an argument
+		if self.num_players == 2:
 			self.name2.text = 'Nobody'
 			self.name2.color = [1,1,1,0.5]
 			self.name4.text = 'Nobody'
 			self.name4.color = [1,1,1,0.5]
-		elif num_players == 3:
+		elif self.num_players == 3:
 			self.name4.text = 'Nobody'	
 			self.name4.color = [1,1,1,0.5]
 	
@@ -436,8 +438,12 @@ class LobbyPopup(Popup):
 			self.name1.text = name
 			self.name1.italic = False
 		elif player_num == 1:
-			self.name2.text = name
-			self.name2.italic = False
+			if self.num_players == 2:
+				self.name3.text = name
+				self.name3.italic = False
+			else:
+				self.name2.text = name
+				self.name2.italic = False
 		elif player_num == 2:
 			self.name3.text = name
 			self.name3.italic = False

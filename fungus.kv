@@ -90,21 +90,22 @@
 	Image:
 		id: icon
 		allow_stretch: True
-		size: self.texture_size
+		#size: self.texture_size
+		size: '32dp','32dp'
 		top: self.parent.top-16
 		x: self.parent.x+16
 	Label:
 		id: name_label
 		size: self.texture_size
-		x: self.parent.x + 64
-		y: self.parent.top - self.height - 24
+		x: self.parent.x + 32 + dp(32)
+		y: self.parent.top - self.height - (16 + dp(32)/2 - self.font_size/2)
 		text: 'Algae'
 	GridLayout:
 		id: bites_grid
 		cols: 8
 		col_default_width: 32
 		x: self.parent.x + 16
-		y: self.parent.top - self.height - 32
+		y: self.parent.top - self.height - dp(32)
 
 <FungusGame>:
 	side_panel: side_panel
@@ -153,10 +154,13 @@
 	name3: name3
 	name4: name4
 	size_hint: None, None
-	size: 600, 180
+	# height = fixedContents + variableContents + fixedHeader + variableHeader
+	# height = (16+8+16) + (32+32)x + 41 + 18x
+	height: 81+dp(82)
+	width: '400dp'
 	auto_dismiss: False
 	title: 'Waiting for Other Players'
-	title_size: 32
+	title_size: '16sp'
 	GridLayout:
 		cols: 4
 		rows: 2
@@ -164,76 +168,83 @@
 		spacing: [8,8]
 		Image:
 			source: 'atlas://Graphics/Green/home/x'
+			allow_stretch: True
 			size_hint: None, None
-			size: 32,32
+			size: '32dp','32dp'
 		Label:
 			id: name1
 			text: 'Waiting...'
-			font_size: 24
+			font_size: '16sp'
 			italic: True
 		Image:
 			source: 'atlas://Graphics/Red/home/x'
+			allow_stretch: True
 			size_hint: None, None
-			size: 32,32
+			size: '32dp','32dp'
 		Label:
 			id: name2
 			text: 'Waiting...'
-			font_size: 24
+			font_size: '16sp'
 			italic: True
 		Image:
 			source: 'atlas://Graphics/Yellow/home/x'
+			allow_stretch: True
 			size_hint: None, None
-			size: 32,32
+			size: '32dp','32dp'
 		Label:
 			id: name4
 			text: 'Waiting...'
-			font_size: 24
+			font_size: '16sp'
 			italic: True
 		Image:
 			source: 'atlas://Graphics/Blue/home/x'
+			allow_stretch: True
 			size_hint: None, None
-			size: 32,32
+			size: '32dp','32dp'
 		Label:
 			id: name3
 			text: 'Waiting...'
-			font_size: 24
+			font_size: '16sp'
 			italic: True
 
 <FirstPopup>:
 	size_hint: None, None
-	size: 900, 348
+	# height = fixedContents + variableContents + fixedHeader + variableHeader
+	# height = (6+6) + 128x + 41 + 18x
+	height: 53 + dp(146)
+	width: '512dp'
 	auto_dismiss: False
 	title: 'Fungus Beta'
-	title_size: 32
+	title_size: '16dp'
 	BoxLayout:
 		orientation: 'horizontal'
-		spacing: 12
+		spacing: '6dp'
 		Image:
 			source: 'Graphics/splash.png'
 			size_hint_x: None
-			width: 256
+			width: '128dp'
 		BoxLayout:
 			orientation: 'vertical'
-			spacing: 12
+			spacing: '6dp'
 			GridLayout:
 				cols: 3
 				rows: 2
-				spacing: 12, 0
+				spacing: '6dp', 0
 				Label:
 					text: 'Net:'
-					font_size: 32
+					font_size: '16sp'
 					text_size: self.size
 					valign: 'middle'
 					halign: 'center'
 				Label:
 					text: 'Players:'
-					font_size: 32
+					font_size: '16sp'
 					text_size: self.size
 					valign: 'middle'
 					halign: 'center'
 				Label:
 					text: 'Name:'
-					font_size: 32
+					font_size: '16sp'
 					text_size: self.size
 					valign: 'middle'
 					halign: 'center'
@@ -241,27 +252,26 @@
 				Switch:
 					active: app.config.getboolean('game', 'enable_networking')
 					on_active: app.config.set('game', 'enable_networking', str(self.active))
-					font_size: 32
 					size_hint_y: None
-					height: 50
+					height: '25dp'
 				Spinner:
 					text: app.config.get('game', 'num_players')
 					values: ('2', '3', '4')
 					on_text: app.config.set('game', 'num_players', self.text)
-					font_size: 32
+					font_size: '16sp'
 					size_hint_y: None
-					height: 50
+					height: '25dp'
 				TextInput:
 					text: app.config.get('game', 'username')
 					on_text: app.config.set('game', 'username', self.text)
 					valign: 'middle'
 					halign: 'center'
 					multiline: False
-					font_size: 32
+					font_size: '14sp'
 					size_hint_x: 2
 					size_hint_y: None
-					height: 50
+					height: '25dp'
 			Button:
 				text: 'GO!'
-				font_size: 32
+				font_size: '16sp'
 				on_press: root.go()

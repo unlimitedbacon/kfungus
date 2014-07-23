@@ -80,7 +80,7 @@ class FungusClient(LineReceiver):
 			self.game.set_new_piece( tetro_num )
 		elif 'ERROR:' in data:
 			command, message = data.split(": ")
-			self.factory.app.errorPopup( 'Notice from server', message )
+			self.factory.app.showErrorPopup( 'Notice from server', message )
 	
 	def sendMove(self, bite_mode, x, y):
 		if bite_mode:
