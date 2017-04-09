@@ -118,10 +118,8 @@ class GridBlock(FloatLayout):
 			else:
 				self.sprite.source = 'Graphics/blank.png'
 		else:
-			if self.neighbors == '':
-				self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/x'
-			else:
-				self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/'+self.neighbors
+			self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/'+(self.neighbors or 'x')
+
 
 # Drag and zoomable view of the entire game grid
 class GameGridView(Scatter):
