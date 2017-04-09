@@ -70,19 +70,19 @@ class TetroGrid(GridLayout):
 					# Up
 					if y > 0:
 						if tetromino[y-1][x]:
-							neighbors = neighbors+'u'
+							neighbors +='u'
 					# Left
 					if x > 0:
 						if tetromino[y][x-1]:
-							neighbors = neighbors+'l'
+							neighbors +='l'
 					# Right
 					if x < self.cols-1:
 						if tetromino[y][x+1]:
-							neighbors = neighbors+'r'
+							neighbors +='r'
 					# Down
 					if y < self.rows-1:
 						if tetromino[y+1][x]:
-							neighbors = neighbors+'d'
+							neighbors +='d'
 					b.neighbors = neighbors
 
 				self.add_widget(b)
