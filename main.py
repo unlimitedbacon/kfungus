@@ -252,8 +252,7 @@ class FungusGame(FloatLayout):
 				player.local = True
 
 		# Initialize player widgets and add them to the side panel
-		for n in range(len(self.players)):
-			p = self.players[n]
+		for p in self.players:
 			p.panel = PlayerWidget()
 			p.panel.name_label.text = p.name
 			p.panel.icon.source = 'atlas://Graphics/'+p.color+'/home/x'
