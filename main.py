@@ -107,16 +107,10 @@ class GridBlock(FloatLayout):
 	def on_neighbors(self, instance, value):
 		self.update_sprite()
 	def on_background(self, instance, value):
-		if value:
-			self.grid_background.source = 'Graphics/Grid/block.png'
-		else:
-			self.grid_background.source = 'Graphics/blank.png'
+		self.grid_background.source = 'Graphics/Grid/block.png' if value else 'Graphics/blank.png'
 	def update_sprite(self):
 		if self.fungus == 'None':
-			if self.sammich:
-				self.sprite.source = 'Graphics/sammich.png'
-			else:
-				self.sprite.source = 'Graphics/blank.png'
+			self.sprite.source = 'Graphics/'+('sammich.png'if self.sammich else'blank.png')
 		else:
 			self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/'+(self.neighbors or 'x')
 
