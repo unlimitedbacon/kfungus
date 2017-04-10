@@ -70,19 +70,19 @@ class TetroGrid(GridLayout):
 					# Up
 					if y > 0:
 						if tetromino[y-1][x]:
-							neighbors = neighbors+'u'
+							neighbors +='u'
 					# Left
 					if x > 0:
 						if tetromino[y][x-1]:
-							neighbors = neighbors+'l'
+							neighbors +='l'
 					# Right
 					if x < self.cols-1:
 						if tetromino[y][x+1]:
-							neighbors = neighbors+'r'
+							neighbors +='r'
 					# Down
 					if y < self.rows-1:
 						if tetromino[y+1][x]:
-							neighbors = neighbors+'d'
+							neighbors +='d'
 					b.neighbors = neighbors
 
 				self.add_widget(b)
@@ -107,21 +107,13 @@ class GridBlock(FloatLayout):
 	def on_neighbors(self, instance, value):
 		self.update_sprite()
 	def on_background(self, instance, value):
-		if value:
-			self.grid_background.source = 'Graphics/Grid/block.png'
-		else:
-			self.grid_background.source = 'Graphics/blank.png'
+		self.grid_background.source = 'Graphics/Grid/block.png' if value else 'Graphics/blank.png'
 	def update_sprite(self):
 		if self.fungus == 'None':
-			if self.sammich:
-				self.sprite.source = 'Graphics/sammich.png'
-			else:
-				self.sprite.source = 'Graphics/blank.png'
+			self.sprite.source = 'Graphics/'+('sammich.png'if self.sammich else'blank.png')
 		else:
-			if self.neighbors == '':
-				self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/x'
-			else:
-				self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/'+self.neighbors
+			self.sprite.source = 'atlas://Graphics/'+self.fungus+'/'+self.ftype+'/'+(self.neighbors or 'x')
+
 
 # Drag and zoomable view of the entire game grid
 class GameGridView(Scatter):
@@ -260,8 +252,7 @@ class FungusGame(FloatLayout):
 				player.local = True
 
 		# Initialize player widgets and add them to the side panel
-		for n in range(len(self.players)):
-			p = self.players[n]
+		for p in self.players:
 			p.panel = PlayerWidget()
 			p.panel.name_label.text = p.name
 			p.panel.icon.source = 'atlas://Graphics/'+p.color+'/home/x'
